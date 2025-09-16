@@ -28,7 +28,7 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Analises',
-    to: '/charts',
+    to: '/dashboard/charts',
     icon: <CIcon icon={cilChartPie} customClassName="nav-icon" />,
     roles: ['admin', 'rh', 'comercial'],
 
@@ -40,71 +40,71 @@ const _nav = [
   {
     component: CNavGroup,
     name: 'Gestão Acadêmica',
-    to: '/base',
+    to: '/dashboard/base',
     icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
     roles: ['admin'], // só admins
     items: [
       {
         component: CNavItem,
         name: 'Gestão de Alunos',
-        to: '/base/accordion',
+        to: '/dashboard/base/accordion',
         roles: ['admin'], // só admins
       },
       {
         name: 'Gestão de Turma',
         component: CNavItem,
-        to: '/base/list-groups',
+        to: '/dashboard/base/list-groups',
         roles: ['admin'], // só admins
       },
       {
         name: 'Gestão de Cursos',
         component: CNavItem,
-        to: '/base/cursos-groups',
+        to: '/dashboard/base/cursos-groups',
         roles: ['admin'], // só admins
 
       },
       {
         component: CNavItem,
-        to: '/base/popovers',
+        to: '/dashboard/base/popovers',
         name: 'Gestão de Aulas',
         roles: ['admin'], // só admins
       },
       {
         name: 'Matrícula e Rematrícula',
         component: CNavItem,
-        to: '/base/carousels',
+        to: '/dashboard/base/carousels',
         roles: ['admin'], // só admins
       },
       {
         component: CNavItem,
         name: 'Gestão de Professores',
-        to: '/buttons/buttons',
+        to: '/dashboard/buttons/buttons',
         roles: ['admin'], // só admins
       },
       {
         component: CNavItem,
         name: 'Atribuição de Disciplinas a Professores',
-        to: '/buttons/dropdowns',
+        to: '/dashboard/buttons/dropdowns',
         roles: ['admin'], // só admins
 
       },
       {
         component: CNavItem,
         name: 'Histórico Escolar e Boletins',
-        to: '/base/cards',
+        to: '/dashboard/base/cards',
         roles: ['admin'], // só admins
 
       },
       {
         component: CNavItem,
-        to: '/base/collapses',
+        to: '/dashboard/base/collapses',
         name: 'Emissão de Documentos',
         roles: ['admin'], // só admins
 
       },
       {
         component: CNavItem,
-        to: '/base/navs',
+        to: '/dashboard/base/navs',
         name: 'Gestão de Notas',
         roles: ['admin'], // só admins
 
@@ -112,13 +112,13 @@ const _nav = [
       {
         name: 'Gestão de Frequência',
         component: CNavItem,
-        to: '/base/paginations',
+        to: '/dashboard/base/paginations',
         roles: ['admin'], // só admins
 
       },
       {
         component: CNavItem,
-        to: '/base/placeholders',
+        to: '/dashboard/base/placeholders',
         name: 'Gestão de Calendário Acadêmico',
         roles: ['admin'], // só admins
 
@@ -135,31 +135,31 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Gestão de Unidade Escolares',
-        to: '/notifications/alerts',
+        to: '/dashboard/notifications/alerts',
         roles: ['admin'],
       },
       {
         component: CNavItem,
         name: 'Parâmetos e Regras Acadêmicas',
-        to: '/notifications/badges',
+        to: '/dashboard/notifications/badges',
         roles: ['admin'],
       },
       {
         component: CNavItem,
         name: 'Cadastro de Feriados e Datas letivas',
-        to: '/notifications/modals',
+        to: '/dashboard/notifications/modals',
         roles: ['admin'],
       },
       {
         component: CNavItem,
         name: 'Controle de Disciplinas',
-        to: '/notifications/toasts',
+        to: '/dashboard/notifications/toasts',
         roles: ['admin'],
       },
       {
         component: CNavItem,
         name: 'Relatórios Gerenciais e Estatísticos',
-        to: '/notifications/relatorio-gerais',
+        to: '/dashboard/notifications/relatorio-gerais',
         roles: ['admin'],
       },
     ],
@@ -168,32 +168,32 @@ const _nav = [
   {
     component: CNavGroup,
     name: 'Gestão de Perfis',
-    to: '/buttons',
+    to: '/dashboard/buttons',
     icon: <CIcon icon={cilCursor} customClassName="nav-icon" />,
     roles: ['admin'], // ✅ grupo só aparece para admins
     items: [
       {
         component: CNavItem,
         name: 'Gestão de Equipe Administrativa',
-        to: '/buttons/button-groups',
+        to: '/dashboard/buttons/button-groups',
         roles: ['admin'],
       },
       {
         component: CNavItem,
         name: 'Transferência interna e externa de alunos',
-        to: '/base/progress',
+        to: '/dashboard/base/progress',
         roles: ['admin'],
       },
       {
         component: CNavItem,
         name: 'Controle de Carga horária',
-        to: '/buttons/time-controler',
+        to: '/dashboard/buttons/time-controler',
         roles: ['admin'],
       },
       {
         component: CNavItem,
         name: 'Desempenho do Docente',
-        to: '/buttons/look-teatcher',
+        to: '/dashboard/buttons/look-teatcher',
         roles: ['admin'],
       },
     ],
@@ -209,37 +209,37 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Visualização de Notas e Faltas',
-        to: '/forms/checks-radios',
-        roles: ['admin', 'Aluno'],
+        to: '/dashboard/forms/checks-radios',
+        roles: ['admin', 'Aluno', 'Professor'],
       },
       {
         component: CNavItem,
         name: 'Acesso a Boletins e Documentos',
-        to: '/forms/floating-labels',
+        to: '/dashboard/forms/floating-labels',
         roles: ['admin', 'Aluno'],
       },
       {
         component: CNavItem,
         name: 'Download de Materiais e Tarefas',
-        to: '/forms/form-control',
+        to: '/dashboard/forms/form-control',
         roles: ['admin', 'Aluno'],
       },
       {
         component: CNavItem,
         name: 'Matrícula e Rematrícula',
-        to: '/forms/input-group',
+        to: '/dashboard/forms/input-group',
         roles: ['admin', 'Aluno'],
       },
       {
         component: CNavItem,
         name: 'Cronograma do Aluno',
-        to: '/forms/range',
+        to: '/dashboard/forms/range',
         roles: ['admin', 'Aluno'],
       },
       {
         component: CNavItem,
         name: 'Portal do Professor',
-        to: '/buttons/teatcher-portal',
+        to: '/dashboard/buttons/teatcher-portal',
         roles: ['admin', 'Professor'],
       },
     ],
@@ -254,26 +254,26 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Desempenho do Aluno',
-        to: '/icons/coreui-icons',
+        to: '/dashboard/icons/coreui-icons',
         roles: ['admin', 'Aluno'],
       },
       {
         component: CNavItem,
         name: 'Notificações e cominicados da escola',
-        to: '/icons/notification',
+        to: '/dashboard/icons/notification',
         roles: ['admin', 'Aluno'],
       },
       {
         component: CNavItem,
         name: 'Soliocitação de Documentos e Matrícula',
-        to: '/icons/flags',
+        to: '/dashboard/icons/flags',
         roles: ['admin', 'Aluno'],
 
       },
       {
         component: CNavItem,
         name: 'Contato com Professors e Direção',
-        to: '/icons/brands',
+        to: '/dashboard/icons/brands',
         roles: ['admin', 'Aluno'],
 
       },
@@ -289,43 +289,43 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Controle de Mensalidades e Cobranças',
-        to: '/gestao-financeira/controle-mensalidades',
+        to: '/dashboard/gestao-financeira/controle-mensalidades',
         roles: ['admin', 'financeiro'],
       },
       {
         component: CNavItem,
         name: 'Regras de Pagamento e Faturação',
-        to: '/gestao-financeira/parametros-regras-academicas',
+        to: '/dashboard/gestao-financeira/parametros-regras-academicas',
         roles: ['admin', 'financeiro'],
       },
       {
         component: CNavItem,
         name: 'Emissão de Faturas e Recibos',
-        to: '/gestao-financeira/emissao-faturas-recibos',
+        to: '/dashboard/gestao-financeira/emissao-faturas-recibos',
         roles: ['admin', 'financeiro'],
       },
       {
         component: CNavItem,
         name: 'Controle de inadimplência',
-        to: '/gestao-financeira/controle-inadimplencia',
+        to: '/dashboard/gestao-financeira/controle-inadimplencia',
         roles: ['admin', 'financeiro'],
       },
       {
         component: CNavItem,
         name: 'Relatório Financeiro',
-        to: '/gestao-financeira/relatorio-financeiro',
+        to: '/dashboard/gestao-financeira/relatorio-financeiro',
         roles: ['admin', 'financeiro'],
       },
       {
         component: CNavItem,
         name: 'Descontos e Bolsas',
-        to: '/gestao-financeira/descontos-bolsas',
+        to: '/dashboard/gestao-financeira/descontos-bolsas',
         roles: ['admin', 'financeiro'],
       },
       {
         component: CNavItem,
         name: 'Pagamentos e Faturação',
-        to: '/gestao-financeira/pagamento-faturacao',
+        to: '/dashboard/gestao-financeira/pagamento-faturacao',
         roles: ['admin', 'financeiro'],
       },
     ],
@@ -341,19 +341,19 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Registro de Provas e Trabalhos',
-        to: '/gestao-avaliacao/registro-provas',
+        to: '/dashboard/gestao-avaliacao/registro-provas',
         roles: ['admin', 'coordenador', 'Professor'],
       },
       {
         component: CNavItem,
         name: 'Peso das Avaliações',
-        to: '/gestao-avaliacao/peso-avaliacoes',
+        to: '/dashboard/gestao-avaliacao/peso-avaliacoes',
         roles: ['admin', 'coordenador'],
       },
       {
         component: CNavItem,
         name: 'Recuperação e Avaliação Final',
-        to: '/gestao-avaliacao/recuperacao-final',
+        to: '/dashboard/gestao-avaliacao/recuperacao-final',
         roles: ['admin', 'coordenador', 'Professor'],
       },
     ],
@@ -369,31 +369,31 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Gestão de Leads e Oportunidades',
-        to: '/comercial/gestao-leads',
+        to: '/dashboard/comercial/gestao-leads',
         roles: ['admin', 'gestor_comercial', 'equipe_comercial'],
       },
       {
         component: CNavItem,
         name: 'Funil de Vendas',
-        to: '/comercial/funil-vendas',
+        to: '/dashboard/comercial/funil-vendas',
         roles: ['admin', 'gestor_comercial'],
       },
       {
         component: CNavItem,
         name: 'Propostas Comerciais e Ofertas',
-        to: '/comercial/propostas-ofertas',
+        to: '/dashboard/comercial/propostas-ofertas',
         roles: ['admin', 'gestor_comercial'],
       },
       {
         component: CNavItem,
         name: 'Relatórios Comerciais',
-        to: '/comercial/relatorios-comercial',
+        to: '/dashboard/comercial/relatorios-comercial',
         roles: ['admin', 'gestor_comercial'],
       },
       {
         component: CNavItem,
         name: 'Equipe Comercial',
-        to: '/comercial/equipe-comercial',
+        to: '/dashboard/comercial/equipe-comercial',
         roles: ['admin', 'gestor_comercial'],
       },
     ],
@@ -409,43 +409,43 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Cargos e Funções',
-        to: '/rh/cargos',
+        to: '/dashboard/rh/cargos',
         roles: ['admin', 'gestor_rh'],
       },
       {
         component: CNavItem,
         name: 'Departamentos',
-        to: '/rh/departamentos',
+        to: '/dashboard/rh/departamentos',
         roles: ['admin', 'gestor_rh'],
       },
       {
         component: CNavItem,
         name: 'Funcionários',
-        to: '/rh/funcionarios',
+        to: '/dashboard/rh/funcionarios',
         roles: ['admin', 'gestor_rh', 'equipe_rh'],
       },
       {
         component: CNavItem,
         name: 'Folha de Pagamento',
-        to: '/rh/folha-pagamento',
+        to: '/dashboard/rh/folha-pagamento',
         roles: ['admin', 'gestor_rh'],
       },
       {
         component: CNavItem,
         name: 'Recibo de Pagamento',
-        to: '/rh/recibos-pagamento',
+        to: '/dashboard/rh/recibos-pagamento',
         roles: ['admin', 'gestor_rh', 'equipe_rh'],
       },
       {
         component: CNavItem,
         name: 'Presenças e Faltas',
-        to: '/rh/presencas',
+        to: '/dashboard/rh/presencas',
         roles: ['admin', 'gestor_rh', 'equipe_rh'],
       },
       {
         component: CNavItem,
         name: 'Relatório de Presenças',
-        to: '/rh/relatorio-presencas',
+        to: '/dashboard/rh/relatorio-presencas',
         roles: ['admin', 'gestor_rh', 'gestor_unidade'],
       },
     ],
@@ -463,37 +463,37 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Configurações Gerais',
-        to: '/config/config-geral',
+        to: '/dashboard/config/config-geral',
         roles: ['admin', 'gestor_ti'],
       },
       {
         component: CNavItem,
         name: 'Integrações',
-        to: '/config/integracoes',
+        to: '/dashboard/config/integracoes',
         roles: ['admin', 'gestor_ti'],
       },
       {
         component: CNavItem,
         name: 'Parâmetro Acadêmico',
-        to: '/config/parametros-academico',
+        to: '/dashboard/config/parametros-academico',
         roles: ['admin', 'gestor_ti'],
       },
       {
         component: CNavItem,
         name: 'Parâmetro Financeiro',
-        to: '/config/parametros-finaceiros',
+        to: '/dashboard/config/parametros-finaceiros',
         roles: ['admin', 'gestor_ti'],
       },
       {
         component: CNavItem,
         name: 'Personalização',
-        to: '/config/personalizacao',
+        to: '/dashboard/config/personalizacao',
         roles: ['admin', 'gestor_ti'],
       },
       {
         component: CNavItem,
         name: 'Perfil do Usuário',
-        to: '/config/user-profile',
+        to: '/dashboard/config/user-profile',
         roles: ['admin', 'gestor_ti', 'user'],
       },
     ],
