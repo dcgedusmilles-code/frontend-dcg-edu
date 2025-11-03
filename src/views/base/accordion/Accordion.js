@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { CCard, CCardBody, CCardHeader, CCol, CContainer, CRow } from '@coreui/react'
-import { DocsComponents, DocsExample } from 'src/components'
-import supabase from '../../../supaBaseClient'
+import axios from 'axios'
+import { CCard, CCardBody, CCardHeader, CCol, CContainer, CRow, CSpinner } from '@coreui/react'
+
 import ModalAluno from './ModalAluno'
 import ModalFiltros from './ModalFiltros'
 import { AppBreadcrumb, ModalConfirmacao, PaginationWrapper } from '../../../components'
@@ -11,6 +11,53 @@ const Accordion = () => {
   const [alunoEditando, setAlunoEditando] = useState(null)
   const [showConfirm, setShowConfirm] = useState(false)
   const [alunoParaExcluir, setAlunoParaExcluir] = useState(null)
+  const [loading, setLoading] = useState(false)
+
+  const [tipoClientes] = useState([])
+  const [municipios] = useState([])
+
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+
+  useEffect(() => {
+    fetchAlunos()
+  }, [])
+
+  const fetchAlunos = async (filters = {}) => {
+    try {
+      setLoading(true)
+      let url = `${API_BASE_URL}/secretaria-academica/students`
+
+      const params = new URLSearchParams()
+      if (filters.search) params.append('search', filters.search)
+      if (filters.startDate) params.append('startDate', filters.startDate)
+      if (filters.endDate) params.append('endDate', filters.endDate)
+      if (filters.orderBy) params.append('orderBy', filters.orderBy)
+      if (filters.perPage) params.append('perPage', filters.perPage)
+
+      const token = localStorage.getItem('accessToken')
+      const response = await axios.get(`${url}?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      setAlunos(response.data || [])
+    } catch (error) {
+      console.error('Erro ao buscar alunos:', error.response?.data || error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const deletarAluno = async (id) => {
+    try {
+      const token = localStorage.getItem('accessToken')
+      await axios.delete(`${API_BASE_URL}/secretaria-academica/students/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      setAlunos((prev) => prev.filter((aluno) => aluno.id !== id))
+    } catch (error) {
+      console.error('Erro ao deletar aluno:', error.response?.data || error.message)
+    }
+  }
 
   const confirmarExclusao = (aluno) => {
     setAlunoParaExcluir(aluno)
@@ -18,90 +65,21 @@ const Accordion = () => {
   }
 
   const handleConfirmDelete = () => {
-    if (alunoParaExcluir) {
-      deletarAluno(alunoParaExcluir.id)
-    }
+    if (alunoParaExcluir) deletarAluno(alunoParaExcluir.id)
     setShowConfirm(false)
   }
 
-  // Se precisar popular selects do modal
-  const [tipoClientes] = useState([])
-  const [municipios] = useState([])
+  const abrirModalNovo = () => setAlunoEditando(null)
+  const abrirModalEditar = (aluno) => setAlunoEditando(aluno)
 
-  useEffect(() => {
-    fetchAlunos()
-  }, [])
+  const handleFiltrar = (filters) => fetchAlunos(filters)
 
-  const fetchAlunos = async (filters = {}) => {
-    let query = supabase.from('alunos').select(
-      `
-        id,
-        nome,
-        data_nascimento,
-        email,
-        telefone,
-        status,
-        enderecos:enderecos (
-          casa_numero,
-          rua,
-          bairro,
-          municipio,
-          provincia
-        ),
-        responsavel:responsaveis (
-          id,
-          nome,
-          telefone
-        )
-      `,
+  if (loading) {
+    return (
+      <div className="text-center p-5">
+        <CSpinner color="primary" />
+      </div>
     )
-
-    // Exemplos de filtros: ajuste conforme suas colunas reais
-    if (filters.startDate) {
-      query = query.gte('data_nascimento', filters.startDate)
-    }
-    if (filters.endDate) {
-      query = query.lte('data_nascimento', filters.endDate)
-    }
-    if (filters.keyFilter && filters.keyFilter !== 'null' && filters.search) {
-      query = query.ilike(filters.keyFilter, `%${filters.search}%`)
-    }
-    if (filters.orderBy) {
-      query = query.order(filters.orderBy, { ascending: true })
-    }
-    if (filters.perPage) {
-      const end = Number(filters.perPage) - 1
-      query = query.range(0, end)
-    }
-
-    const { data, error } = await query
-    if (error) {
-      console.error('Erro ao buscar alunos:', error)
-    } else {
-      setAlunos(data || [])
-    }
-  }
-
-  const deletarAluno = async (id) => {
-    const { error } = await supabase.from('alunos').delete().eq('id', id)
-    if (error) {
-      console.error('Erro ao deletar aluno:', error)
-    } else {
-      setAlunos((prev) => prev.filter((aluno) => aluno.id !== id))
-    }
-  }
-
-  // Abrir modal apenas ajustando estado; a abertura visual é por data attributes
-  const abrirModalNovo = () => {
-    setAlunoEditando(null)
-  }
-
-  const abrirModalEditar = (aluno) => {
-    setAlunoEditando(aluno)
-  }
-
-  const handleFiltrar = (filters) => {
-    fetchAlunos(filters)
   }
 
   return (
@@ -118,7 +96,7 @@ const Accordion = () => {
             municipios={municipios}
           />
         </CContainer>
-        <CRow className="my-4"></CRow>
+
         <CRow className="my-4">
           <CCol md={8}></CCol>
           <CCol xs={6} md={4} className="d-flex justify-content-end gap-2">
@@ -135,122 +113,131 @@ const Accordion = () => {
 
         <CCard className="my-4">
           <CCardBody>
-            <PaginationWrapper data={alunos} itemsPerPage={3}>
+            <PaginationWrapper data={alunos} itemsPerPage={5}>
               {(paginaAtual) => (
-                <table className="table table-bordered table-striped">
-                  <thead className="table-dark">
-                    <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">Nome Completo</th>
-                      <th scope="col">Data de Nascimento</th>
-                      <th scope="col">E-mail</th>
-                      <th scope="col">Telefone</th>
-                      <th scope="col">Status Acadêmico</th>
-                      <th scope="col">Endereço</th>
-                      <th scope="col">Responsáveis</th>
-                      <th scope="col">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {paginaAtual.map((aluno) => (
-                      <tr key={aluno.id}>
-                        <td>{aluno.id}</td>
-                        <td>{aluno.nome}</td>
-                        <td>{aluno.data_nascimento}</td>
-                        <td>{aluno.email}</td>
-                        <td>{aluno.telefone}</td>
-                        <td>{aluno.status ?? '-'}</td>
-                        <td>
-                          {aluno.enderecos
-                            ? `${aluno.enderecos.rua ?? ''}, Nº ${aluno.enderecos.casa_numero ?? ''}, ${aluno.enderecos.bairro ?? ''}`
-                            : '-'}
-                        </td>
-                        <td>{aluno?.responsavel?.nome || '-'}</td>
-                        <td>
-                          <div className="dropdown">
-                            <button
-                              className="btn btn-secondary btn-sm dropdown-toggle"
-                              type="button"
-                              id={`dropdownMenu-${aluno.id}`}
-                              data-bs-toggle="dropdown"
-                              aria-expanded="false"
-                            >
-                              Ações
-                            </button>
+                <div class="table_wrapper">
+                  <table className="table table-bordered table-striped align-middle">
+                    <thead className="table-dark">
+                      <tr>
+                        <th>#</th>
+                        <th>Nome</th>
+                        <th>Data de Nascimento</th>
+                        <th>Email</th>
+                        <th>Telefone</th>
+                        <th>Status</th>
+                        <th>Endereço</th>
+                        <th>Responsáveis</th>
+                        <th>Matrículas</th>
+                        <th>Documentos</th>
+                        <th>Transferências</th>
+                        <th>Históricos</th>
+                        <th>Protocolos</th>
+                        <th>Atendimentos</th>
+                        <th>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {paginaAtual?.length ? (
+                        paginaAtual.map((aluno) => (
+                          <tr key={aluno.id}>
+                            <td>{aluno.id}</td>
+                            <td>{aluno?.nome ?? '-'}</td>
+                            <td>
+                              {aluno?.data_nascimento
+                                ? new Date(aluno.data_nascimento).toLocaleDateString('pt-PT')
+                                : '-'}
+                            </td>
+                            <td>{aluno?.email ?? '-'}</td>
+                            <td>{aluno?.telefone ?? '-'}</td>
+                            <td>{aluno?.status ?? '-'}</td>
+                            <td>{aluno?.endereco ?? '-'}</td>
+                            <td>
+                              {aluno?.encarregados?.length
+                                ? aluno.encarregados.map((e) => e.nome).join(', ')
+                                : '-'}
+                            </td>
+                            <td>
+                              {aluno?.matriculas?.length
+                                ? aluno.matriculas.map((m) => m.curso_nome ?? m.id).join(', ')
+                                : '-'}
+                            </td>
+                            <td>
+                              {aluno?.documentos?.length
+                                ? aluno.documentos.map((d) => d.tipo ?? d.nome).join(', ')
+                                : '-'}
+                            </td>
+                            <td>
+                              {aluno?.transferencias?.length
+                                ? aluno.transferencias.map((t) => t.destino ?? t.id).join(', ')
+                                : '-'}
+                            </td>
+                            <td>
+                              {aluno?.historicos?.length
+                                ? aluno.historicos.map((h) => h.descricao ?? h.id).join(', ')
+                                : '-'}
+                            </td>
+                            <td>
+                              {aluno?.protocolos?.length
+                                ? aluno.protocolos.map((p) => p.tipo ?? p.id).join(', ')
+                                : '-'}
+                            </td>
+                            <td>
+                              {aluno?.agendamentos?.length
+                                ? aluno.agendamentos.map((a) => a.data ?? a.id).join(', ')
+                                : '-'}
+                            </td>
+                            <td>
+                              <div className="dropdown">
+                                <button
+                                  className="btn btn-secondary btn-sm dropdown-toggle"
+                                  type="button"
+                                  id={`dropdownMenu-${aluno.id}`}
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                >
+                                  Ações
+                                </button>
 
-                            <ul
-                              className="dropdown-menu"
-                              aria-labelledby={`dropdownMenu-${aluno.id}`}
-                            >
-                              {(() => {
-                                const acoes = []
-
-                                // Exemplo: ação só se aluno não tiver acesso ainda
-                                if (!aluno.temAcesso) {
-                                  acoes.push({
-                                    label: 'Dar Acesso',
-                                    icon: 'fa-edit',
-                                    onClick: () => {
-                                      iniAluno(aluno)
-                                      darAcesso()
-                                    },
-                                  })
-                                }
-
-                                // Exemplo: ação sempre disponível
-                                acoes.push({
-                                  label: 'Editar Aluno',
-                                  icon: 'fa-edit',
-                                  onClick: () => {
-                                    abrirModalEditar(aluno)
-                                  },
-                                  modalTarget: '#modalAluno',
-                                })
-
-                                acoes.push({
-                                  label: 'Excluir Aluno',
-                                  icon: 'fa-trash',
-                                  onClick: () => confirmarExclusao(aluno),
-                                })
-
-                                // Exemplo: ação baseada no responsável
-                                if (aluno.responsavel && aluno.responsavel.email) {
-                                  acoes.push({
-                                    label: 'Enviar Email ao Responsável',
-                                    icon: 'fa-envelope',
-                                    onClick: () => enviarEmail(aluno.responsavel.email),
-                                  })
-                                }
-
-                                // Renderização das ações
-                                return acoes.map((acao, idx) => (
-                                  <li key={idx}>
+                                <ul
+                                  className="dropdown-menu"
+                                  aria-labelledby={`dropdownMenu-${aluno.id}`}
+                                >
+                                  <li>
                                     <button
                                       className="dropdown-item btn-sm"
-                                      onClick={acao.onClick}
-                                      {...(acao.modalTarget
-                                        ? {
-                                            'data-bs-toggle': 'modal',
-                                            'data-bs-target': acao.modalTarget,
-                                          }
-                                        : {})}
+                                      data-bs-toggle="modal"
+                                      data-bs-target="#modalAluno"
+                                      onClick={() => abrirModalEditar(aluno)}
                                     >
-                                      <i className={`fa ${acao.icon}`}></i> {acao.label}
+                                      <i className="fa fa-edit"></i> Editar
                                     </button>
                                   </li>
-                                ))
-                              })()}
-                            </ul>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                                  <li>
+                                    <button
+                                      className="dropdown-item btn-sm text-danger"
+                                      onClick={() => confirmarExclusao(aluno)}
+                                    >
+                                      <i className="fa fa-trash"></i> Excluir
+                                    </button>
+                                  </li>
+                                </ul>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={15} className="text-center py-4">
+                            Nenhum aluno encontrado.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </PaginationWrapper>
 
-            {/* Modal do Aluno (já existente) */}
             <ModalAluno alunoEditando={alunoEditando} onSalvo={() => fetchAlunos()} />
             <ModalConfirmacao
               show={showConfirm}

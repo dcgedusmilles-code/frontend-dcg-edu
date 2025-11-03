@@ -39,7 +39,7 @@ const _nav = [
   },
   {
     component: CNavGroup,
-    name: 'Gestão Acadêmica',
+    name: 'Secretaria Acadêmica',
     to: '/dashboard/base',
     icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
     roles: ['admin'], // só admins
@@ -48,6 +48,12 @@ const _nav = [
         component: CNavItem,
         name: 'Gestão de Alunos',
         to: '/dashboard/base/accordion',
+        roles: ['admin'], // só admins
+      },
+      {
+        name: 'Matrícula e Rematrícula',
+        component: CNavItem,
+        to: '/dashboard/base/carousels',
         roles: ['admin'], // só admins
       },
       {
@@ -69,12 +75,7 @@ const _nav = [
         name: 'Gestão de Aulas',
         roles: ['admin'], // só admins
       },
-      {
-        name: 'Matrícula e Rematrícula',
-        component: CNavItem,
-        to: '/dashboard/base/carousels',
-        roles: ['admin'], // só admins
-      },
+      
       {
         component: CNavItem,
         name: 'Gestão de Professores',

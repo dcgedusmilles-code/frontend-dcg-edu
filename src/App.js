@@ -1,33 +1,35 @@
-import React, { StrictMode, Suspense, useEffect } from "react"
-import { HashRouter, Route, Routes } from "react-router-dom"
-import { useSelector } from "react-redux"
-import { CSpinner, useColorModes } from "@coreui/react"
-import { useTranslation } from "react-i18next"
-import "./i18n"
+import React, { StrictMode, Suspense, useEffect } from "react";
+import { HashRouter, Route, Routes } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { CSpinner, useColorModes } from "@coreui/react";
+import { useTranslation } from "react-i18next";
+import "./i18n";
 
-import "./scss/style.scss"
-import "./scss/globals.css"
-import "./scss/examples.scss"
+// Estilos globais
+import "./scss/style.scss";
+import "./scss/globals.css";
+import "./scss/examples.scss";
 
-import ProtectedRoute from "./ProtectedRoute"
-import { AuthContextProvider } from "./context/AuthContext"
-import routes from "./routes"
+// Contexto e rotas protegidas
+import { AuthContextProvider } from "./context/AuthContext";
+import ProtectedRoute from "./ProtectedRoute"; // <-- atualizado o path se necessário
+import routes from "./routes";
 
 // Containers
-const DefaultLayout = React.lazy(() => import("./layout/DefaultLayout"))
-const RootLayout = React.lazy(() => import("./layout/Layout"))
+const DefaultLayout = React.lazy(() => import("./layout/DefaultLayout"));
+const RootLayout = React.lazy(() => import("./layout/Layout"));
 
-// Pages públicas
-const Register = React.lazy(() => import("./views/pages/register/Register"))
-const Page404 = React.lazy(() => import("./views/pages/page404/Page404"))
-const Page500 = React.lazy(() => import("./views/pages/page500/Page500"))
+// Páginas públicas
+const Register = React.lazy(() => import("./views/pages/register/Register"));
+const Page404 = React.lazy(() => import("./views/pages/page404/Page404"));
+const Page500 = React.lazy(() => import("./views/pages/page500/Page500"));
 
 /**
- * Renderiza rotas recursivamente (pai/filho).
+ * 🔁 Função recursiva para renderizar rotas com suporte a roles
  */
 const renderRoutes = (routes) =>
   routes.map((route, idx) => {
-    const Element = route.element
+    const Element = route.element;
     return (
       <Route
         key={idx}
@@ -44,17 +46,18 @@ const renderRoutes = (routes) =>
       >
         {route.children && renderRoutes(route.children)}
       </Route>
-    )
-  })
+    );
+  });
 
 const App = () => {
-  const { i18n } = useTranslation()
-  const { isColorModeSet, setColorMode } = useColorModes("coreui-theme")
-  const storedTheme = useSelector((state) => state.theme)
+  const { i18n } = useTranslation();
+  const { isColorModeSet, setColorMode } = useColorModes("coreui-theme");
+  const storedTheme = useSelector((state) => state.theme);
 
+  // 🎨 Garante o tema salvo no Redux
   useEffect(() => {
-    if (!isColorModeSet()) setColorMode(storedTheme)
-  }, [isColorModeSet, setColorMode, storedTheme])
+    if (!isColorModeSet()) setColorMode(storedTheme);
+  }, [isColorModeSet, setColorMode, storedTheme]);
 
   return (
     <StrictMode>
@@ -68,17 +71,19 @@ const App = () => {
             }
           >
             <Routes>
-              {/* Rotas públicas */}
+              {/* 🌐 Rotas públicas */}
+              <Route index path="/" element={<RootLayout />} />
               <Route path="/register" element={<Register />} />
               <Route path="/500" element={<Page500 />} />
-              <Route index path="/" element={<RootLayout />} />
               <Route path="*" element={<Page404 />} />
 
-              {/* Rotas protegidas */}
+              {/* 🔐 Rotas protegidas */}
               <Route
                 path="/dashboard/*"
                 element={
-                  <ProtectedRoute requiredRoles={["admin", "gestor", "Professor", "Aluno"]}>
+                  <ProtectedRoute
+                    requiredRoles={["admin", "gestor", "professor", "aluno"]}
+                  >
                     <DefaultLayout />
                   </ProtectedRoute>
                 }
@@ -90,7 +95,7 @@ const App = () => {
         </HashRouter>
       </AuthContextProvider>
     </StrictMode>
-  )
-}
+  );
+};
 
-export default App
+export default App;

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import supabase from '../../../supaBaseClient'
+import axios from '../../../api'
+import Swal from 'sweetalert2'
 
 export default function ModalAluno({ alunoEditando, onSalvo }) {
   const [formData, setFormData] = useState({
@@ -7,7 +8,10 @@ export default function ModalAluno({ alunoEditando, onSalvo }) {
     data_nascimento: '',
     email: '',
     telefone: '',
-    responsavel_id: '',
+    sexo: '',
+    documento: '',
+    endereco: '',
+    status: 'ativo',
   })
 
   const [usarResponsavelExistente, setUsarResponsavelExistente] = useState(false)
@@ -15,49 +19,41 @@ export default function ModalAluno({ alunoEditando, onSalvo }) {
   const [responsavelSelecionado, setResponsavelSelecionado] = useState('')
   const [novoResponsavel, setNovoResponsavel] = useState({
     nome: '',
-    email: '',
     telefone: '',
+    email: '',
+    parentesco: '',
+    endereco: '',
   })
 
-  const [novoEndereco, setNovoEndereco] = useState({
-    casa_numero: '',
-    rua: '',
-    bairro: '',
-    municipio: '',
-    distrito: '',
-    provincia: '',
-  })
+  const [documentos, setDocumentos] = useState([])
 
-  const [documentos, setDocumentos] = useState([]) // múltiplos arquivos
-
+  // 🔹 Carrega encarregados existentes se marcado
   useEffect(() => {
-    if (usarResponsavelExistente) {
-      fetchResponsaveis()
-    }
+    if (usarResponsavelExistente) fetchResponsaveis()
   }, [usarResponsavelExistente])
 
   const fetchResponsaveis = async () => {
-    const { data, error } = await supabase.from('responsaveis').select('*')
-    if (!error) setResponsaveis(data)
+    try {
+      const { data } = await axios.get('/secretaria-academica/in-charge')
+      setResponsaveis(data)
+    } catch (error) {
+      console.error('Erro ao carregar encarregados:', error)
+    }
   }
 
+  // 🔹 Preenche formulário ao editar
   useEffect(() => {
     if (alunoEditando) {
       setFormData({
-        nome: alunoEditando.nome,
-        data_nascimento: alunoEditando.data_nascimento,
-        email: alunoEditando.email,
-        telefone: alunoEditando.telefone,
+        nome: alunoEditando.nome || '',
+        data_nascimento: alunoEditando.data_nascimento || '',
+        email: alunoEditando.email || '',
+        telefone: alunoEditando.telefone || '',
+        sexo: alunoEditando.sexo || '',
+        documento: alunoEditando.documento || '',
+        endereco: alunoEditando.endereco || '',
+        status: alunoEditando.status || 'ativo',
       })
-
-      if (alunoEditando.responsavel_id) {
-        setUsarResponsavelExistente(true)
-        setResponsavelSelecionado(alunoEditando.responsavel_id)
-      }
-
-      if (alunoEditando.endereco_id) {
-        setNovoEndereco(alunoEditando.endereco_id)
-      }
     } else {
       resetForm()
     }
@@ -69,115 +65,82 @@ export default function ModalAluno({ alunoEditando, onSalvo }) {
       data_nascimento: '',
       email: '',
       telefone: '',
-      responsavel_id: '',
+      sexo: '',
+      documento: '',
+      endereco: '',
+      status: 'ativo',
     })
-    setNovoResponsavel({ nome: '', email: '', telefone: '' })
-    setNovoEndereco({
-      casa_numero: '',
-      rua: '',
-      bairro: '',
-      municipio: '',
-      distrito: '',
-      provincia: '',
+    setNovoResponsavel({
+      nome: '',
+      telefone: '',
+      email: '',
+      parentesco: '',
+      endereco: '',
     })
-    setDocumentos([])
     setResponsavelSelecionado('')
     setUsarResponsavelExistente(false)
+    setDocumentos([])
   }
 
   const salvarAluno = async (e) => {
     e.preventDefault()
-    let responsavelId = responsavelSelecionado
 
-    // Criar responsável novo
-    if (!usarResponsavelExistente) {
-      const { data: respData, error: respError } = await supabase
-        .from('responsaveis')
-        .insert([novoResponsavel])
-        .select('id')
-        .single()
-      if (respError) {
-        console.error('Erro ao criar responsável:', respError)
-        return
-      }
-      responsavelId = respData.id
-    }
-
-    // Criar endereço
-    let enderecoId = null
-    if (Object.values(novoEndereco).some((v) => v.trim() !== '')) {
-      const { data: endData, error: endError } = await supabase
-        .from('enderecos')
-        .insert([novoEndereco])
-        .select('id')
-        .single()
-      if (endError) {
-        console.error('Erro ao criar endereço:', endError)
-        return
-      }
-      enderecoId = endData.id
-    }
-
-    // Salvar aluno
-    const alunoPayload = {
-      ...formData,
-      responsavel_id: responsavelId,
-      endereco_id: enderecoId,
-    }
-
-    let alunoId
-    let error
-
-    if (alunoEditando) {
-      ;({ error } = await supabase.from('alunos').update(alunoPayload).eq('id', alunoEditando.id))
-      alunoId = alunoEditando.id
-    } else {
-      const { data: alunoData, error: alunoError } = await supabase
-        .from('alunos')
-        .insert([alunoPayload])
-        .select('id')
-        .single()
-      alunoId = alunoData?.id
-      error = alunoError
-    }
-
-    if (error) {
-      console.error('Erro ao salvar aluno:', error)
+    if (!formData.nome.trim()) {
+      Swal.fire('Atenção', 'O nome do aluno é obrigatório', 'warning')
       return
     }
 
-    // Upload múltiplo de documentos
-    if (documentos.length > 0 && alunoId) {
-      for (let file of documentos) {
-        const ext = file.name.split('.').pop()
-        if (!['pdf', 'docx'].includes(ext.toLowerCase())) {
-          alert(`Arquivo inválido: ${file.name}. Apenas PDF/DOCX permitidos.`)
-          continue
+    try {
+      let encarregadoId = responsavelSelecionado
+
+      // 🔹 Cria novo encarregado, se necessário
+      if (!usarResponsavelExistente) {
+        if (!novoResponsavel.nome.trim()) {
+          Swal.fire('Atenção', 'O nome do encarregado é obrigatório', 'warning')
+          return
         }
 
-        const filePath = `alunos/${alunoId}/${Date.now()}_${file.name}`
-        const { error: uploadError } = await supabase.storage
-          .from('documentos')
-          .upload(filePath, file)
-
-        if (uploadError) {
-          console.error('Erro no upload:', uploadError)
-        } else {
-          await supabase.from('documentos_aluno').insert([
-            {
-              aluno_id: alunoId,
-              caminho: filePath,
-              nome: file.name,
-            },
-          ])
-        }
+        const { data: novoEnc } = await axios.post('/secretaria-academica/in-charge', novoResponsavel)
+        encarregadoId = novoEnc.id
       }
-    }
 
-    onSalvo()
-    const modal = bootstrap.Modal.getInstance(document.getElementById('modalAluno'))
-    modal.hide()
-    resetForm()
+      // 🔹 Cria ou atualiza aluno
+      let alunoId
+      if (alunoEditando) {
+        const { data } = await axios.put(`/secretaria-academica/students/${alunoEditando.id}`, formData)
+        alunoId = data.id
+      } else {
+        const { data } = await axios.post('/secretaria-academica/students', formData)
+        alunoId = data.id
+      }
+
+      // 🔹 Relaciona aluno e encarregado
+      if (encarregadoId) {
+        await axios.post('/secretaria-academica/student-in-charge', {
+          aluno_id: alunoId,
+          encarregado_id: encarregadoId,
+          tipo_responsabilidade: 'geral',
+        })
+      }
+
+      // 🔹 Upload de documentos
+      if (documentos.length > 0) {
+        const formDataFiles = new FormData()
+        documentos.forEach((file) => formDataFiles.append('files', file))
+        await axios.post(`/secretaria-academica/students/${alunoId}/documentos`, formDataFiles, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+      }
+
+      Swal.fire('Sucesso', 'Aluno salvo com sucesso!', 'success')
+      onSalvo()
+      resetForm()
+      const modal = bootstrap.Modal.getInstance(document.getElementById('modalAluno'))
+      modal.hide()
+    } catch (error) {
+      console.error('Erro ao salvar aluno:', error)
+      Swal.fire('Erro', 'Falha ao salvar aluno', 'error')
+    }
   }
 
   return (
@@ -191,117 +154,70 @@ export default function ModalAluno({ alunoEditando, onSalvo }) {
             </div>
 
             <div className="modal-body row g-3">
-              {/* Campos do aluno */}
+              {/* 🔸 Dados do Aluno */}
               <div className="col-md-6">
                 <label className="form-label">Nome</label>
-                <input
-                  className="form-control"
-                  value={formData.nome}
-                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                />
+                <input className="form-control" value={formData.nome} onChange={(e) => setFormData({ ...formData, nome: e.target.value })} />
               </div>
+
               <div className="col-md-6">
                 <label className="form-label">Data de Nascimento</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  value={formData.data_nascimento}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      data_nascimento: e.target.value,
-                    })
-                  }
-                />
+                <input type="date" className="form-control" value={formData.data_nascimento} onChange={(e) => setFormData({ ...formData, data_nascimento: e.target.value })} />
               </div>
+
+              <div className="col-md-6">
+                <label className="form-label">Sexo</label>
+                <select className="form-select" value={formData.sexo} onChange={(e) => setFormData({ ...formData, sexo: e.target.value })}>
+                  <option value="">Selecione...</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Feminino">Feminino</option>
+                </select>
+              </div>
+
+              <div className="col-md-6">
+                <label className="form-label">Documento</label>
+                <input className="form-control" value={formData.documento} onChange={(e) => setFormData({ ...formData, documento: e.target.value })} />
+              </div>
+
               <div className="col-md-6">
                 <label className="form-label">Email</label>
-                <input
-                  type="email"
-                  className="form-control"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
+                <input type="email" className="form-control" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
               </div>
+
               <div className="col-md-6">
                 <label className="form-label">Telefone</label>
-                <input
-                  className="form-control"
-                  value={formData.telefone}
-                  onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                />
+                <input className="form-control" value={formData.telefone} onChange={(e) => setFormData({ ...formData, telefone: e.target.value })} />
               </div>
 
-              {/* Endereço */}
-              {/* Endereço */}
-              <div className="col-md-3">
-                <label className="form-label">Casa Nº</label>
-                <input
-                  className="form-control"
-                  value={novoEndereco.casa_numero}
-                  onChange={(e) =>
-                    setNovoEndereco({ ...novoEndereco, casa_numero: e.target.value })
-                  }
-                />
+              <div className="col-md-12">
+                <label className="form-label">Endereço</label>
+                <input className="form-control" value={formData.endereco} onChange={(e) => setFormData({ ...formData, endereco: e.target.value })} />
               </div>
-              <div className="col-md-3">
-                <label className="form-label">Bairro</label>
-                <input
-                  className="form-control"
-                  value={novoEndereco.bairro}
-                  onChange={(e) => setNovoEndereco({ ...novoEndereco, bairro: e.target.value })}
-                />
-              </div>
-              <div className="col-md-3">
-                <label className="form-label">Município</label>
-                <input
-                  className="form-control"
-                  value={novoEndereco.municipio}
-                  onChange={(e) => setNovoEndereco({ ...novoEndereco, municipio: e.target.value })}
-                />
-              </div>
-              <div className="col-md-3">
-                <label className="form-label">Distrito</label>
-                <input
-                  className="form-control"
-                  value={novoEndereco.distrito}
-                  onChange={(e) => setNovoEndereco({ ...novoEndereco, distrito: e.target.value })}
-                />
-              </div>
+
               <div className="col-md-6">
-                <label className="form-label">Província</label>
-                <input
-                  className="form-control"
-                  value={novoEndereco.provincia}
-                  onChange={(e) => setNovoEndereco({ ...novoEndereco, provincia: e.target.value })}
-                />
+                <label className="form-label">Status</label>
+                <select className="form-select" value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
+                  <option value="ativo">Ativo</option>
+                  <option value="inativo">Inativo</option>
+                </select>
               </div>
 
-              {/* Seletor de responsável */}
-              <div className="col-12">
+              {/* 🔸 Responsável */}
+              <div className="col-12 mt-3">
                 <div className="form-check mb-2">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    checked={usarResponsavelExistente}
-                    onChange={(e) => setUsarResponsavelExistente(e.target.checked)}
-                  />
-                  <label className="form-check-label">Usar responsável já cadastrado</label>
+                  <input className="form-check-input" type="checkbox" checked={usarResponsavelExistente} onChange={(e) => setUsarResponsavelExistente(e.target.checked)} />
+                  <label className="form-check-label">Usar encarregado existente</label>
                 </div>
               </div>
 
               {usarResponsavelExistente ? (
                 <div className="col-md-12">
-                  <label className="form-label">Selecione o responsável</label>
-                  <select
-                    className="form-select"
-                    value={responsavelSelecionado}
-                    onChange={(e) => setResponsavelSelecionado(e.target.value)}
-                  >
+                  <label className="form-label">Selecione o encarregado</label>
+                  <select className="form-select" value={responsavelSelecionado} onChange={(e) => setResponsavelSelecionado(e.target.value)}>
                     <option value="">Selecione...</option>
-                    {responsaveis.map((resp) => (
-                      <option key={resp.id} value={resp.id}>
-                        {resp.nome} - {resp.telefone}
+                    {responsaveis.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.nome} - {r.telefone}
                       </option>
                     ))}
                   </select>
@@ -309,57 +225,36 @@ export default function ModalAluno({ alunoEditando, onSalvo }) {
               ) : (
                 <>
                   <div className="col-md-6">
-                    <label className="form-label">Nome do Responsável</label>
-                    <input
-                      className="form-control"
-                      value={novoResponsavel.nome}
-                      onChange={(e) =>
-                        setNovoResponsavel({
-                          ...novoResponsavel,
-                          nome: e.target.value,
-                        })
-                      }
-                    />
+                    <label className="form-label">Nome do Encarregado</label>
+                    <input className="form-control" value={novoResponsavel.nome} onChange={(e) => setNovoResponsavel({ ...novoResponsavel, nome: e.target.value })} />
                   </div>
+
                   <div className="col-md-6">
-                    <label className="form-label">E-mail do Resp.</label>
-                    <input
-                      className="form-control"
-                      value={novoResponsavel.email}
-                      onChange={(e) =>
-                        setNovoResponsavel({
-                          ...novoResponsavel,
-                          email: e.target.value,
-                        })
-                      }
-                    />
+                    <label className="form-label">Telefone</label>
+                    <input className="form-control" value={novoResponsavel.telefone} onChange={(e) => setNovoResponsavel({ ...novoResponsavel, telefone: e.target.value })} />
                   </div>
+
                   <div className="col-md-6">
-                    <label className="form-label">Telefone do Resp.</label>
-                    <input
-                      className="form-control"
-                      value={novoResponsavel.telefone}
-                      onChange={(e) =>
-                        setNovoResponsavel({
-                          ...novoResponsavel,
-                          telefone: e.target.value,
-                        })
-                      }
-                    />
+                    <label className="form-label">Email</label>
+                    <input type="email" className="form-control" value={novoResponsavel.email} onChange={(e) => setNovoResponsavel({ ...novoResponsavel, email: e.target.value })} />
+                  </div>
+
+                  <div className="col-md-6">
+                    <label className="form-label">Parentesco</label>
+                    <input className="form-control" value={novoResponsavel.parentesco} onChange={(e) => setNovoResponsavel({ ...novoResponsavel, parentesco: e.target.value })} />
+                  </div>
+
+                  <div className="col-md-12">
+                    <label className="form-label">Endereço</label>
+                    <input className="form-control" value={novoResponsavel.endereco} onChange={(e) => setNovoResponsavel({ ...novoResponsavel, endereco: e.target.value })} />
                   </div>
                 </>
               )}
 
-              {/* Upload de documentos */}
-              <div className="col-md-12">
-                <label className="form-label">Documentos do Aluno (PDF/DOCX)</label>
-                <input
-                  type="file"
-                  className="form-control"
-                  accept=".pdf,.docx"
-                  multiple
-                  onChange={(e) => setDocumentos(Array.from(e.target.files))}
-                />
+              {/* 🔸 Documentos */}
+              <div className="col-md-12 mt-3">
+                <label className="form-label">Documentos (PDF/DOCX)</label>
+                <input type="file" multiple className="form-control" accept=".pdf,.docx" onChange={(e) => setDocumentos(Array.from(e.target.files))} />
               </div>
             </div>
 

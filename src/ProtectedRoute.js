@@ -1,19 +1,31 @@
-import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
-import { UserAuth } from "./context/AuthContext";
+import React from 'react'
+import { Navigate, Outlet } from 'react-router-dom'
+import { UserAuth } from './context/AuthContext'
 
 const ProtectedRoute = ({ children, requiredRoles }) => {
-  const { session, role, loading } = UserAuth();
+  const { user, role, loading } = UserAuth()
 
-  if (loading) return <div>Carregando...</div>;
+  console.log('Auth info ->', { user, role, loading })
 
-  if (!session) return <Navigate to="/" replace />;
-
-  if (requiredRoles && !requiredRoles.includes(role)) {
-    return <div>🚫 Acesso negado. Seu perfil não tem permissão.</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p>Carregando...</p>
+      </div>
+    )
   }
 
-  return children ? children : <Outlet />;
-};
+  if (!user && !loading) {
+    return <Navigate to="/" replace />
+  }
 
-export default ProtectedRoute;
+  // 🚫 Se o usuário não tem a role necessária
+  if (requiredRoles && !requiredRoles.includes(role)) {
+    return <div>🚫 Acesso negado. Seu perfil não tem permissão.</div>
+  }
+
+  // ✅ Acesso permitido
+  return children ? children : <Outlet />
+}
+
+export default ProtectedRoute
