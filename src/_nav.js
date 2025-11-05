@@ -2,17 +2,57 @@ import React from 'react'
 import CIcon from '@coreui/icons-react'
 import {
   cilBell,
-  cilCalculator,
   cilChartPie,
   cilCursor,
-  cilDescription,
-  cilDrop,
-  cilExternalLink,
   cilNotes,
-  cilPencil,
   cilPuzzle,
   cilSpeedometer,
   cilStar,
+  cilBook,
+  cilSchool,
+  cilClipboard,
+  cilTask,
+  cilSpreadsheet,
+  cilLibrary,
+  cilFolderOpen,
+  cilCheckCircle,
+  cilDollar,
+  cilMoney,
+  cilBank,
+  cilChartLine,
+  cilFile,
+  cilGift,
+  cilUser,
+  cilFactory,
+  cilPeople,
+  cilUserFollow,
+  cilListRich,
+  cilBriefcase,
+  cilChart,
+  cilWarning,
+  cilCalendar,
+  cilEducation,
+  cilBuilding,
+  cilGroup,
+  cilHandshake,
+  cilHeart,
+  cilCommentSquare,
+  cilTags,
+  cilShieldAlt,
+  cilStorage,
+  cilTruck,
+  cilList,
+  cilBookmark,
+  cilSettings,
+  cilCloud,
+  cilCode,
+  cilBug,
+  cilDevices,
+  cilBullhorn,
+  cilNewspaper,
+  cilLink,
+  cilGlobeAlt,
+  cilBarChart,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -23,7 +63,6 @@ const _nav = [
     to: '/dashboard',
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
     roles: ['admin', 'rh', 'comercial'], // ✅ só quem tiver esse role vê
-
   },
   {
     component: CNavItem,
@@ -31,12 +70,877 @@ const _nav = [
     to: '/dashboard/charts',
     icon: <CIcon icon={cilChartPie} customClassName="nav-icon" />,
     roles: ['admin', 'rh', 'comercial'],
-
   },
   {
     component: CNavTitle,
     name: 'Principal',
   },
+
+  /*
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   */
+
+  {
+    component: CNavGroup,
+    name: 'Gestão Acadêmica',
+    to: '/dashboard/gestao-academica',
+    icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
+    roles: ['admin', 'secretaria', 'coordenador'],
+    items: [
+      // =======================
+      // 📘 PEDAGÓGICO
+      // =======================
+      {
+        component: CNavGroup,
+        name: 'Pedagógico',
+        icon: <CIcon icon={cilBook} customClassName="nav-icon" />,
+        roles: ['admin', 'pedagogico'],
+        items: [
+          {
+            component: CNavItem,
+            name: 'Calendário Acadêmico',
+            to: '/dashboard/pedagogico/academic-calendar',
+            // roles: ['admin'], // só admins
+          },
+          {
+            component: CNavItem,
+            name: 'Disciplinas',
+            to: '/dashboard/pedagogico/disciplines',
+            roles: ['admin'],
+          },
+          {
+            component: CNavItem,
+            name: 'Professores',
+            to: '/dashboard/pedagogico/teachers',
+            roles: ['admin'],
+          },
+          {
+            component: CNavItem,
+            name: 'Planos de Aula',
+            to: '/dashboard/pedagogico/lesson-plan',
+          },
+        ],
+      },
+
+      // =======================
+      // 🧾 SECRETARIA ACADÊMICA
+      // =======================
+      {
+        component: CNavGroup,
+        name: 'Secretaria Acadêmica',
+        icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
+        roles: ['admin', 'secretaria'],
+        items: [
+          {
+            component: CNavItem,
+            name: 'Alunos',
+            to: '/dashboard/secretaria-academica/students',
+          },
+          {
+            component: CNavItem,
+            name: 'Matrículas',
+            to: '/dashboard/secretaria-academica/enrollment',
+            roles: ['admin'],
+          },
+          {
+            component: CNavItem,
+            name: 'Registos Acadêmicos',
+            to: '/dashboard/secretaria-academica/academic-records',
+            roles: ['admin'],
+          },
+          {
+            component: CNavItem,
+            name: 'Transferências',
+            to: '/dashboard/secretaria-academica/transfers',
+            roles: ['admin'],
+          },
+          {
+            component: CNavItem,
+            name: 'Documentos',
+            to: '/dashboard/secretaria-academica/academic-documents',
+          },
+          {
+            component: CNavItem,
+            name: 'Protocolos',
+            to: '/dashboard/secretaria-academica/protocol',
+          },
+        ],
+      },
+
+      // =======================
+      // 🧭 COORDENAÇÃO E FORMAÇÃO
+      // =======================
+      {
+        component: CNavGroup,
+        name: 'Coordenação e Formação',
+        icon: <CIcon icon={cilSchool} customClassName="nav-icon" />,
+        roles: ['admin', 'coordenador'],
+        items: [
+          {
+            component: CNavItem,
+            name: 'Cursos',
+            to: '/dashboard/training-coordinators/courses',
+          },
+          {
+            component: CNavItem,
+            name: 'Coordenadores',
+            to: '/dashboard/training-coordinators/training-coordinators',
+          },
+          {
+            component: CNavItem,
+            name: 'Instrutores',
+            to: '/dashboard/training-coordinators/instructors',
+          },
+          {
+            component: CNavItem,
+            name: 'Plano de Formação',
+            to: '/dashboard/training-coordinators/training-plan',
+          },
+          {
+            component: CNavItem,
+            name: 'Registo de Participantes',
+            to: '/dashboard/training-coordinators/perticipants',
+          },
+          {
+            component: CNavItem,
+            name: 'Registo de Turmas',
+            to: '/dashboard/training-coordinators/registration',
+          },
+        ],
+      },
+    ],
+  },
+
+  /** Avaliação e Certificação */
+
+  {
+    component: CNavGroup,
+    name: 'Avaliação e Certificação',
+    to: '/dashboard/avaliacao-certificacao',
+    icon: <CIcon icon={cilCheckCircle} customClassName="nav-icon" />,
+    roles: ['admin', 'pedagogico', 'avaliador', 'coordenador'],
+    items: [
+      {
+        component: CNavItem,
+        name: 'Avaliações',
+        to: '/avaliacao-certicacao/assessments',
+        icon: <CIcon icon={cilTask} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Critérios de Avaliação',
+        to: '/avaliacao-certicacao/evaluation-criterias',
+        icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Resultados',
+        to: '/avaliacao-certicacao/assessment-results',
+        icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Feedbacks',
+        to: '/avaliacao-certicacao/feedbacks',
+        icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Certificados',
+        to: '/avaliacao-certicacao/certificates',
+        icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Históricos de Certificação',
+        to: '/avaliacao-certicacao/certificate-histories',
+        icon: <CIcon icon={cilLibrary} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Bancas Examinadoras',
+        to: '/avaliacao-certicacao/examining-boards',
+        icon: <CIcon icon={cilFolderOpen} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Recursos de Avaliação',
+        to: '/avaliacao-certicacao/assessment-resources',
+        icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
+      },
+    ],
+  },
+
+  {
+    component: CNavGroup,
+    name: 'Gestão Financeira',
+    to: '/dashboard/financeiro',
+    icon: <CIcon icon={cilDollar} customClassName="nav-icon" />,
+    roles: ['admin', 'financeiro', 'contabil', 'gestor'],
+    items: [
+      {
+        component: CNavItem,
+        name: 'Contas a Pagar',
+        to: '/financeiro/accounts-payable',
+        icon: <CIcon icon={cilMoney} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Contas a Receber',
+        to: '/financeiro/accounts-receivable',
+        icon: <CIcon icon={cilBank} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Movimentos de Caixa',
+        to: '/financeiro/cash-movements',
+        icon: <CIcon icon={cilChartLine} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Relatórios Financeiros',
+        to: '/financeiro/financial-reports',
+        icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Mensalidades',
+        to: '/financeiro/monthly-fees',
+        icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Bolsas e Descontos',
+        to: '/financeiro/scholarships-and-discounts',
+        icon: <CIcon icon={cilGift} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Salários',
+        to: '/financeiro/employee-salaries',
+        icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Fornecedores',
+        to: '/financeiro/suppliers',
+        icon: <CIcon icon={cilFactory} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Relatório Padrão',
+        to: '/financeiro/default-report',
+        icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
+      },
+    ],
+  },
+
+
+
+  {
+    component: CNavGroup,
+    name: 'Gestão Comercial',
+    to: '/dashboard/comercial',
+    icon: <CIcon icon={cilBriefcase} customClassName="nav-icon" />,
+    roles: ['admin', 'comercial', 'gestor'],
+    items: [
+      {
+        component: CNavItem,
+        name: 'Clientes',
+        to: '/comercial/clients',
+        icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Leads',
+        to: '/comercial/leads',
+        icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Oportunidades',
+        to: '/comercial/opportunities',
+        icon: <CIcon icon={cilHandshake} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Contratos',
+        to: '/comercial/contracts',
+        icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Propostas',
+        to: '/comercial/commercial-proposals',
+        icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Produtos e Serviços',
+        to: '/comercial/products-services',
+        icon: <CIcon icon={cilTags} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Relatórios Comerciais',
+        to: '/comercial/commercial-reports',
+        icon: <CIcon icon={cilChartLine} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Metas Comerciais',
+        to: '/comercial/commercial-goals',
+        icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Comissões',
+        to: '/comercial/commissions',
+        icon: <CIcon icon={cilMoney} customClassName="nav-icon" />,
+      },
+    ],
+  },
+
+
+
+
+  {
+    component: CNavGroup,
+    name: 'Gestão de Pessoas (RH)',
+    to: '/dashboard/human-resources',
+    icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
+    roles: ['admin', 'rh', 'gestor'],
+    items: [
+      {
+        component: CNavItem,
+        name: 'Colaboradores',
+        to: '/human-resources/employees',
+        icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Candidatos',
+        to: '/human-resources/candidates',
+        icon: <CIcon icon={cilUserFollow} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Processos Seletivos',
+        to: '/human-resources/selection-process',
+        icon: <CIcon icon={cilListRich} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Contratos de Trabalho',
+        to: '/human-resources/employment-contracts',
+        icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Cargos e Posições',
+        to: '/human-resources/positions',
+        icon: <CIcon icon={cilBriefcase} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Avaliação de Desempenho',
+        to: '/human-resources/performance-evaluations',
+        icon: <CIcon icon={cilChart} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Folha de Pagamento',
+        to: '/human-resources/payroll',
+        icon: <CIcon icon={cilMoney} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Benefícios',
+        to: '/human-resources/benefits',
+        icon: <CIcon icon={cilGift} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Treinamentos',
+        to: '/human-resources/trainings',
+        icon: <CIcon icon={cilSchool} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Advertências',
+        to: '/human-resources/disciplinary-warnings',
+        icon: <CIcon icon={cilWarning} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Férias',
+        to: '/human-resources/vacation',
+        icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
+      },
+    ],
+  },
+
+
+
+
+
+
+
+  {
+    component: CNavGroup,
+    name: 'Gestão de Estágio e Empregabilidade',
+    to: '/dashboard/internship-and-professional-integration-office',
+    icon: <CIcon icon={cilBriefcase} customClassName="nav-icon" />,
+    roles: ['admin', 'coordenador', 'estagio'],
+    items: [
+      {
+        component: CNavItem,
+        name: 'Estágios',
+        to: '/internship-and-professional-integration-office/internships',
+        icon: <CIcon icon={cilEducation} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Candidaturas',
+        to: '/internship-and-professional-integration-office/applications-internships',
+        icon: <CIcon icon={cilUserFollow} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Relatórios',
+        to: '/internship-and-professional-integration-office/internship-reports',
+        icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Empresas Parceiras',
+        to: '/internship-and-professional-integration-office/partner-companies',
+        icon: <CIcon icon={cilBuilding} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Supervisores',
+        to: '/internship-and-professional-integration-office/company-supervisors',
+        icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Egressos',
+        to: '/internship-and-professional-integration-office/former-students',
+        icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Programas de Empregabilidade',
+        to: '/internship-and-professional-integration-office/employability-programs',
+        icon: <CIcon icon={cilChart} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Relações Empresariais',
+        to: '/internship-and-professional-integration-office/business-relationships',
+        icon: <CIcon icon={cilHandshake} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Vagas de Estágio',
+        to: '/internship-and-professional-integration-office/vacancies-internship',
+        icon: <CIcon icon={cilBriefcase} customClassName="nav-icon" />,
+      },
+    ],
+  },
+
+
+
+
+
+  {
+    component: CNavGroup,
+    name: 'Gestão de Apoio ao Estudante',
+    to: '/dashboard/student-support-office',
+    icon: <CIcon icon={cilHeart} customClassName="nav-icon" />,
+    roles: ['admin', 'apoio_estudante', 'coordenador'],
+    items: [
+      {
+        component: CNavItem,
+        name: 'Acompanhamento Acadêmico',
+        to: '/student-support-office/academic-monitoring',
+        icon: <CIcon icon={cilEducation} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Serviços ao Estudante',
+        to: '/student-support-office/student-services',
+        icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Programas de Carreira',
+        to: '/student-support-office/career-programs',
+        icon: <CIcon icon={cilSchool} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Instituições Parceiras',
+        to: '/student-support-office/partner-institutions',
+        icon: <CIcon icon={cilHandshake} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Reclamações e Sugestões',
+        to: '/student-support-office/complaints-suggestions',
+        icon: <CIcon icon={cilCommentSquare} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Benefícios',
+        to: '/student-support-office/student-benefits',
+        icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Bolsas',
+        to: '/student-support-office/student-scholarships',
+        icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Eventos e Apoio',
+        to: '/student-support-office/events-support',
+        icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Orientadores',
+        to: '/student-support-office/advisors',
+        icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+      },
+    ],
+  },
+
+
+
+
+
+  {
+    component: CNavGroup,
+    name: 'Infraestrutura e Logística',
+    to: '/dashboard/infrastructure-and-logistics',
+    icon: <CIcon icon={cilBuilding} customClassName="nav-icon" />,
+    roles: ['admin', 'infraestrutura', 'logistica'],
+    items: [
+      {
+        component: CNavItem,
+        name: 'Patrimônio',
+        to: '/infrastructure-and-logistics/heritage-routes',
+        icon: <CIcon icon={cilFactory} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Manutenção',
+        to: '/infrastructure-and-logistics/maintenance-routes',
+        icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Transporte',
+        to: '/infrastructure-and-logistics/transportation-routes',
+        icon: <CIcon icon={cilTruck} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Logística de Estoque',
+        to: '/infrastructure-and-logistics/stock-logistics-routes',
+        icon: <CIcon icon={cilStorage} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Movimentação de Estoque',
+        to: '/infrastructure-and-logistics/stock-movements-routes',
+        icon: <CIcon icon={cilStorage} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Fornecedores',
+        to: '/infrastructure-and-logistics/suppliers-routes',
+        icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Segurança Patrimonial',
+        to: '/infrastructure-and-logistics/asset-security-routes',
+        icon: <CIcon icon={cilShieldAlt} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Obras e Infraestrutura',
+        to: '/infrastructure-and-logistics/infrastructure-works-routes',
+        icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Agendamentos e Transporte',
+        to: '/infrastructure-and-logistics/appointments-transportation-routes',
+        icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
+      },
+    ],
+  },
+
+
+
+
+  {
+    component: CNavGroup,
+    name: 'Biblioteca e Recursos de Informação',
+    to: '/dashboard/library-resource-center',
+    icon: <CIcon icon={cilLibrary} customClassName="nav-icon" />,
+    roles: ['admin', 'biblioteca', 'gestor'],
+    items: [
+      {
+        component: CNavItem,
+        name: 'Catálogo Digital',
+        to: '/library-resource-center/digital-catalog',
+        icon: <CIcon icon={cilList} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Acervo',
+        to: '/library-resource-center/collection',
+        icon: <CIcon icon={cilFolderOpen} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Empréstimos',
+        to: '/library-resource-center/loans',
+        icon: <CIcon icon={cilBook} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Reservas',
+        to: '/library-resource-center/reservations',
+        icon: <CIcon icon={cilBookmark} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Multas',
+        to: '/library-resource-center/fines',
+        icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Usuários',
+        to: '/library-resource-center/users-library',
+        icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Sugestões de Aquisição',
+        to: '/library-resource-center/acquisition-suggestions',
+        icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Eventos',
+        to: '/library-resource-center/library-events',
+        icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Sessões de Estudo',
+        to: '/library-resource-center/study-session',
+        icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
+      },
+    ],
+  },
+
+
+
+
+
+
+  {
+    component: CNavGroup,
+    name: 'Tecnologia da Informação',
+    to: '/dashboard/it-department',
+    icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
+    roles: ['admin', 'ti', 'gestor'],
+    items: [
+      {
+        component: CNavItem,
+        name: 'Usuários de Sistema',
+        to: '/it-department/it-users',
+        icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Contas e Sistemas',
+        to: '/it-department/accounts-systems',
+        icon: <CIcon icon={cilCloud} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Projetos de TI',
+        to: '/it-department/it-projects',
+        icon: <CIcon icon={cilCode} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Suporte',
+        to: '/it-department/it-support',
+        icon: <CIcon icon={cilBug} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Técnicos',
+        to: '/it-department/it-technicians',
+        icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Ativos de TI',
+        to: '/it-department/it-asset',
+        icon: <CIcon icon={cilDevices} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Licenças de Software',
+        to: '/it-department/software-licenses',
+        icon: <CIcon icon={cilFile} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Segurança da Informação',
+        to: '/it-department/it-security',
+        icon: <CIcon icon={cilShieldAlt} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Rede e Infraestrutura',
+        to: '/it-department/infrastructure-network',
+        icon: <CIcon icon={cilShieldAlt} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Logs de Acesso',
+        to: '/it-department/logs-access',
+        icon: <CIcon icon={cilList} customClassName="nav-icon" />,
+      },
+    ],
+  },
+
+
+  {
+    component: CNavGroup,
+    name: 'Comunicação e Marketing',
+    to: '/dashboard/communication-and-marketing',
+    icon: <CIcon icon={cilBullhorn} customClassName="nav-icon" />,
+    roles: ['admin', 'marketing', 'gestor'],
+    items: [
+      {
+        component: CNavItem,
+        name: 'Campanhas',
+        to: '/communication-and-marketing/campaign',
+        icon: <CIcon icon={cilNewspaper} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Canais de Divulgação',
+        to: '/communication-and-marketing/campaign-disclosure',
+        icon: <CIcon icon={cilLink} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Conteúdos',
+        to: '/communication-and-marketing/contents',
+        icon: <CIcon icon={cilGlobeAlt} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Eventos',
+        to: '/communication-and-marketing/events',
+        icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Parcerias',
+        to: '/communication-and-marketing/partnerships',
+        icon: <CIcon icon={cilHandshake} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Pesquisas de Mercado',
+        to: '/communication-and-marketing/market-research',
+        icon: <CIcon icon={cilChartLine} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Relações Públicas',
+        to: '/communication-and-marketing/public-relations',
+        icon: <CIcon icon={cilPeople} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Métricas de Marketing',
+        to: '/communication-and-marketing/marketing-metrics',
+        icon: <CIcon icon={cilBarChart} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Canais e Mídias',
+        to: '/communication-and-marketing/campaign-channel',
+        icon: <CIcon icon={cilLink} customClassName="nav-icon" />,
+      },
+    ],
+  },
+
+
+  {
+    component: CNavGroup,
+    name: 'Blog e Conteúdos',
+    to: '/dashboard/blog',
+    icon: <CIcon icon={cilNewspaper} customClassName="nav-icon" />,
+    roles: ['admin', 'editor', 'comunicacao'], // ajustar conforme perfis
+    items: [
+      {
+        component: CNavItem,
+        name: 'Postagens',
+        to: '/blog/blog-posts',
+        icon: <CIcon icon={cilNewspaper} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Categorias',
+        to: '/blog/categories',
+        icon: <CIcon icon={cilList} customClassName="nav-icon" />,
+      },
+    ],
+  },
+
+
+
+
+
+  /**
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   */
+
+  {
+    component: CNavTitle,
+    name: 'Principal',
+  },
+
   {
     component: CNavGroup,
     name: 'Secretaria Acadêmica',
@@ -67,64 +971,38 @@ const _nav = [
         component: CNavItem,
         to: '/dashboard/base/cursos-groups',
         roles: ['admin'], // só admins
+      },
 
-      },
-      {
-        component: CNavItem,
-        to: '/dashboard/base/popovers',
-        name: 'Gestão de Aulas',
-        roles: ['admin'], // só admins
-      },
-      
-      {
-        component: CNavItem,
-        name: 'Gestão de Professores',
-        to: '/dashboard/buttons/buttons',
-        roles: ['admin'], // só admins
-      },
       {
         component: CNavItem,
         name: 'Atribuição de Disciplinas a Professores',
         to: '/dashboard/buttons/dropdowns',
         roles: ['admin'], // só admins
-
       },
       {
         component: CNavItem,
         name: 'Histórico Escolar e Boletins',
         to: '/dashboard/base/cards',
         roles: ['admin'], // só admins
-
       },
       {
         component: CNavItem,
         to: '/dashboard/base/collapses',
         name: 'Emissão de Documentos',
         roles: ['admin'], // só admins
-
       },
       {
         component: CNavItem,
         to: '/dashboard/base/navs',
         name: 'Gestão de Notas',
         roles: ['admin'], // só admins
-
       },
       {
         name: 'Gestão de Frequência',
         component: CNavItem,
         to: '/dashboard/base/paginations',
         roles: ['admin'], // só admins
-
       },
-      {
-        component: CNavItem,
-        to: '/dashboard/base/placeholders',
-        name: 'Gestão de Calendário Acadêmico',
-        roles: ['admin'], // só admins
-
-      },
-
     ],
   },
   {
@@ -149,12 +1027,6 @@ const _nav = [
         component: CNavItem,
         name: 'Cadastro de Feriados e Datas letivas',
         to: '/dashboard/notifications/modals',
-        roles: ['admin'],
-      },
-      {
-        component: CNavItem,
-        name: 'Controle de Disciplinas',
-        to: '/dashboard/notifications/toasts',
         roles: ['admin'],
       },
       {
@@ -199,7 +1071,6 @@ const _nav = [
       },
     ],
   },
-
 
   {
     component: CNavGroup,
@@ -269,14 +1140,12 @@ const _nav = [
         name: 'Soliocitação de Documentos e Matrícula',
         to: '/dashboard/icons/flags',
         roles: ['admin', 'Aluno'],
-
       },
       {
         component: CNavItem,
         name: 'Contato com Professors e Direção',
         to: '/dashboard/icons/brands',
         roles: ['admin', 'Aluno'],
-
       },
     ],
   },
@@ -332,7 +1201,6 @@ const _nav = [
     ],
   },
 
-
   {
     component: CNavGroup,
     name: 'Gestão de Avaliação',
@@ -359,7 +1227,6 @@ const _nav = [
       },
     ],
   },
-
 
   {
     component: CNavGroup,
@@ -399,7 +1266,6 @@ const _nav = [
       },
     ],
   },
-
 
   {
     component: CNavGroup,
@@ -498,8 +1364,7 @@ const _nav = [
         roles: ['admin', 'gestor_ti', 'user'],
       },
     ],
-  }
-
+  },
 ]
 
 export default _nav

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import supabase from '../../../supaBaseClient'
+import axios from 'axios'
+
 
 export default function ModalMatricula({ matriculaEditando, onSalvo }) {
   const [alunos, setAlunos] = useState([])
@@ -14,6 +15,15 @@ export default function ModalMatricula({ matriculaEditando, onSalvo }) {
   const [professor, setProfessor] = useState(null)
   const [cursoProfessor, setCursoProfessor] = useState(null)
 
+   // ✅ Base URL da API via variável de ambiente
+  const API_BASE_URL = import.meta.env.VITE_API_URL
+
+  // ✅ Instância configurada do Axios
+  const api = axios.create({
+    baseURL: API_BASE_URL,
+  })
+  
+
   // Carregar alunos e cursos
   useEffect(() => {
     fetchAlunos()
@@ -21,34 +31,34 @@ export default function ModalMatricula({ matriculaEditando, onSalvo }) {
   }, [])
 
   const fetchAlunos = async () => {
-    const { data, error } = await supabase.from('alunos').select('id, nome')
-    if (!error) setAlunos(data)
+    try {
+      const { data } = await api.get('/secretaria-academica/alunos')
+      setAlunos(data)
+    } catch (err) {
+      console.error('Erro ao buscar alunos:', err)
+    }
   }
 
   const fetchCursos = async () => {
-    const { data, error } = await supabase.from('cursos').select('id, nome')
-    if (!error) setCursos(data)
+    try {
+      const { data } = await api.get('/secretaria-academica/cursos')
+      setCursos(data)
+    } catch (err) {
+      console.error('Erro ao buscar cursos:', err)
+    }
   }
 
   const fetchTurmas = async (cursoId) => {
     if (!cursoId) return
-    const { data, error } = await supabase
-      .from('turmas')
-      .select(`
-        id,
-        nome,
-        professor:professor_id(
-          id,
-          nome,
-          curso:curso_id(id, nome)
-        )
-      `)
-      .eq('curso_id', cursoId)
-
-    if (!error) setTurmas(data || [])
+    try {
+      const { data } = await api.get(`/secretaria-academica/turmas?curso_id=${cursoId}`)
+      setTurmas(data || [])
+    } catch (err) {
+      console.error('Erro ao buscar turmas:', err)
+    }
   }
 
-  // Preencher se for edição
+  // Preencher campos se estiver editando
   useEffect(() => {
     if (matriculaEditando) {
       setAlunoId(matriculaEditando.aluno_id)
@@ -84,28 +94,23 @@ export default function ModalMatricula({ matriculaEditando, onSalvo }) {
       data_matricula: dataMatricula || new Date().toISOString().split('T')[0],
     }
 
-    let error
-    if (matriculaEditando) {
-      ({ error } = await supabase
-        .from('matriculas')
-        .update(payload)
-        .eq('id', matriculaEditando.id))
-    } else {
-      ({ error } = await supabase.from('matriculas').insert([payload]))
-    }
+    try {
+      if (matriculaEditando) {
+        await api.put(`/secretaria-academica/matriculas/${matriculaEditando.id}`, payload)
+      } else {
+        await api.post('/secretaria-academica/matriculas', payload)
+      }
 
-    if (error) {
-      console.error('Erro ao salvar matrícula:', error)
-      return
+      onSalvo()
+      const modal = bootstrap.Modal.getInstance(document.getElementById('modalMatricula'))
+      modal.hide()
+      resetForm()
+    } catch (err) {
+      console.error('Erro ao salvar matrícula:', err)
     }
-
-    onSalvo()
-    const modal = bootstrap.Modal.getInstance(document.getElementById('modalMatricula'))
-    modal.hide()
-    resetForm()
   }
 
-  // Quando mudar curso → carregar turmas
+  // Atualizar turmas quando curso mudar
   useEffect(() => {
     if (cursoId) {
       fetchTurmas(cursoId)
@@ -114,7 +119,7 @@ export default function ModalMatricula({ matriculaEditando, onSalvo }) {
     }
   }, [cursoId])
 
-  // Quando mudar turma → setar professor/curso dele
+  // Atualizar professor quando turma mudar
   useEffect(() => {
     const turmaSelecionada = turmas.find((t) => String(t.id) === String(turmaId))
     if (turmaSelecionada) {
@@ -128,7 +133,7 @@ export default function ModalMatricula({ matriculaEditando, onSalvo }) {
 
   return (
     <div className="modal fade" id="modalMatricula" tabIndex="-1">
-      <div className="modal-dialog">
+      <div className="modal-dialog modal-lg">
         <div className="modal-content">
           <form onSubmit={salvarMatricula}>
             <div className="modal-header">
@@ -140,42 +145,44 @@ export default function ModalMatricula({ matriculaEditando, onSalvo }) {
 
             <div className="modal-body">
               {/* Seleção de aluno */}
-              <div className="mb-3">
-                <label className="form-label">Aluno</label>
-                <select
-                  className="form-select"
-                  value={alunoId}
-                  onChange={(e) => setAlunoId(e.target.value)}
-                  required
-                >
-                  <option value="">Selecione...</option>
-                  {alunos.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {a.nome}
-                    </option>
-                  ))}
-                </select>
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Aluno</label>
+                  <select
+                    className="form-select"
+                    value={alunoId}
+                    onChange={(e) => setAlunoId(e.target.value)}
+                    required
+                  >
+                    <option value="">Selecione...</option>
+                    {alunos.map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Curso */}
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Curso</label>
+                  <select
+                    className="form-select"
+                    value={cursoId}
+                    onChange={(e) => setCursoId(e.target.value)}
+                    required
+                  >
+                    <option value="">Selecione...</option>
+                    {cursos.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              {/* Seleção de curso */}
-              <div className="mb-3">
-                <label className="form-label">Curso</label>
-                <select
-                  className="form-select"
-                  value={cursoId}
-                  onChange={(e) => setCursoId(e.target.value)}
-                  required
-                >
-                  <option value="">Selecione...</option>
-                  {cursos.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.nome}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Seleção de turma */}
+              {/* Turma */}
               <div className="mb-3">
                 <label className="form-label">Turma</label>
                 <select
@@ -193,26 +200,28 @@ export default function ModalMatricula({ matriculaEditando, onSalvo }) {
                 </select>
               </div>
 
-              {/* Professor (auto-preenchido) */}
-              <div className="mb-3">
-                <label className="form-label">Professor</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={professor?.nome || ''}
-                  disabled
-                />
-              </div>
+              {/* Professor */}
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Professor</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={professor?.nome || ''}
+                    disabled
+                  />
+                </div>
 
-              {/* Curso do professor (auto-preenchido) */}
-              <div className="mb-3">
-                <label className="form-label">Curso do Professor</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={cursoProfessor?.nome || ''}
-                  disabled
-                />
+                {/* Curso do professor */}
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Curso do Professor</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={cursoProfessor?.nome || ''}
+                    disabled
+                  />
+                </div>
               </div>
 
               {/* Data da matrícula */}

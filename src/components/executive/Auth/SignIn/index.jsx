@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
-import SocialSignIn from '../SocialSignIn'
 import Logo from '../../Layout/Header/Logo'
 import Loader from '../../Common/Loader'
 import { UserAuth } from '../../../../context/AuthContext'

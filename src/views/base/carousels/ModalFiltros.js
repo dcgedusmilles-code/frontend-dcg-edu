@@ -1,7 +1,7 @@
-import { CCol } from '@coreui/react'
 import React, { useState } from 'react'
+import { CCol } from '@coreui/react'
 
-const ModalFiltrosMatriculas = ({ onFiltrar, alunos = [], cursos = [] }) => {
+const ModalFiltros = ({ onFiltrar, alunos = [], cursos = [] }) => {
   const [filters, setFilters] = useState({
     perPage: 5,
     startDate: '',
@@ -19,33 +19,50 @@ const ModalFiltrosMatriculas = ({ onFiltrar, alunos = [], cursos = [] }) => {
     setFilters((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault()
     onFiltrar?.(filters)
+  }
+
+  const handleReset = () => {
+    const resetFilters = {
+      perPage: 5,
+      startDate: '',
+      endDate: '',
+      keyFilter: 'null',
+      search: '',
+      orderBy: '',
+      estado: '',
+      aluno_id: 'null',
+      curso_id: 'null',
+    }
+    setFilters(resetFilters)
+    onFiltrar?.(resetFilters)
   }
 
   return (
     <CCol xs={12}>
-      <div className="filter-modal">
+      <form className="filter-modal" onSubmit={handleSubmit}>
         <div className="modal-body">
           <div className="row g-2 align-items-end">
             {/* Itens por página */}
             <div className="col-md-1 col-3">
+              <label className="visually-hidden">Itens por página</label>
               <select
                 name="perPage"
                 value={filters.perPage}
                 onChange={handleChange}
                 className="form-control"
               >
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
+                {[5, 10, 25, 50, 100].map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
               </select>
             </div>
 
-            {/* Data início */}
+            {/* Datas */}
             <div className="col-md-2 col-6">
+              <label className="visually-hidden">Data inicial</label>
               <input
                 type="date"
                 name="startDate"
@@ -54,9 +71,8 @@ const ModalFiltrosMatriculas = ({ onFiltrar, alunos = [], cursos = [] }) => {
                 className="form-control"
               />
             </div>
-
-            {/* Data fim */}
             <div className="col-md-2 col-6">
+              <label className="visually-hidden">Data final</label>
               <input
                 type="date"
                 name="endDate"
@@ -74,7 +90,7 @@ const ModalFiltrosMatriculas = ({ onFiltrar, alunos = [], cursos = [] }) => {
                 onChange={handleChange}
                 className="form-control"
               >
-                <option value="null">Selecione o tipo</option>
+                <option value="null">Tipo de filtro</option>
                 <option value="id">ID Matrícula</option>
                 <option value="aluno">Aluno</option>
                 <option value="curso">Curso</option>
@@ -82,27 +98,24 @@ const ModalFiltrosMatriculas = ({ onFiltrar, alunos = [], cursos = [] }) => {
             </div>
 
             {/* Campo de pesquisa */}
-            <div className="col-md-3">
-              <div className="position-relative">
-                <input
-                  type="text"
-                  name="search"
-                  value={filters.search}
-                  onChange={handleChange}
-                  placeholder="Pesquisar..."
-                  className="form-control"
-                />
-                <i
-                  className="fa fa-search position-absolute"
-                  style={{
-                    right: 10,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    fontSize: 18,
-                    color: '#777',
-                  }}
-                />
-              </div>
+            <div className="col-md-3 position-relative">
+              <input
+                type="text"
+                name="search"
+                value={filters.search}
+                onChange={handleChange}
+                placeholder="Pesquisar..."
+                className="form-control"
+              />
+              <i
+                className="fa fa-search position-absolute"
+                style={{
+                  right: 10,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#777',
+                }}
+              />
             </div>
 
             {/* Ordenação */}
@@ -120,7 +133,7 @@ const ModalFiltrosMatriculas = ({ onFiltrar, alunos = [], cursos = [] }) => {
               </select>
             </div>
 
-            {/* Status da matrícula */}
+            {/* Status */}
             <div className="col-md-2">
               <select
                 name="estado"
@@ -143,10 +156,8 @@ const ModalFiltrosMatriculas = ({ onFiltrar, alunos = [], cursos = [] }) => {
                 className="form-control"
               >
                 <option value="null">Todos os alunos</option>
-                {alunos.map((aluno) => (
-                  <option key={aluno.id} value={aluno.id}>
-                    {aluno.nome}
-                  </option>
+                {alunos.map((a) => (
+                  <option key={a.id} value={a.id}>{a.nome}</option>
                 ))}
               </select>
             </div>
@@ -160,28 +171,33 @@ const ModalFiltrosMatriculas = ({ onFiltrar, alunos = [], cursos = [] }) => {
                 className="form-control"
               >
                 <option value="null">Todos os cursos</option>
-                {cursos.map((curso) => (
-                  <option key={curso.id} value={curso.id}>
-                    {curso.nome}
-                  </option>
+                {cursos.map((c) => (
+                  <option key={c.id} value={c.id}>{c.nome}</option>
                 ))}
               </select>
             </div>
 
             {/* Botões */}
             <div className="col-md-3 d-flex gap-2">
-              <button type="button" className="btn btn-primary btn-sm" onClick={handleSubmit}>
+              <button type="submit" className="btn btn-primary btn-sm">
                 <i className="fa fa-search" /> Filtrar
               </button>
-              <button type="button" className="btn btn-info btn-sm">
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={handleReset}
+              >
+                <i className="fa fa-eraser" /> Limpar
+              </button>
+              <button type="button" className="btn btn-success btn-sm">
                 <i className="fa fa-file-excel-o" /> Excel
               </button>
             </div>
           </div>
         </div>
-      </div>
+      </form>
     </CCol>
   )
 }
 
-export default ModalFiltrosMatriculas
+export default ModalFiltros

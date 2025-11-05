@@ -117,7 +117,6 @@ const UsuariosPerfis = React.lazy(() => import('./views/configuracoes/pages/Usua
 const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
-
 const routes = [
   {
     path: 'forms/checks-radios',
@@ -130,30 +129,45 @@ const routes = [
     name: 'Dashboard',
     element: Dashboard,
     roles: ['admin', 'rh', 'comercial', 'Professor', 'Aluno'],
-
   },
-  { path: 'theme', name: 'Theme', element: Colors, exact: true },
+
+
+
+
+  {
+    path: 'pedagogico/academic-calendar',
+    name: 'academic-calendar',
+    element: Placeholders,
+    // roles: ['admin', 'Professor'],
+  },
+  { path: 'pedagogico/teachers', name: 'teachers', element: Buttons, roles: ['admin'] },
+  { path: 'pedagogico/lesson-plan', name: 'lesson-plan', element: Popovers, roles: ['admin'] },
+  { path: 'pedagogico/disciplines', name: 'disciplines', element: Toasts, roles: ['admin'] },
+
+  { path: 'secretaria-academica/students', name: 'students', element: Accordion, roles: ['admin'] },
+  { path: 'secretaria-academica/enrollment', name: 'enrollment', element: Carousels, roles: ['admin'] },
+  { path: 'secretaria-academica/transfers', name: 'transfers', element: Alerts, roles: ['admin'] },
+  { path: 'secretaria-academica/academic-documents', name: 'academic-documents', element: Collapses, roles: ['admin'] },
+  { path: 'secretaria-academica/protocol', name: 'protocol', element: Badges, roles: ['admin'] },
+  { path: 'secretaria-academica/academic-records', name: 'academic-records', element: Cards, roles: ['admin'] },
+
+
+
+  { path: 'training-coordinators/courses', name: 'courses', element: CursosGroups, roles: ['admin'] },
+  { path: 'training-coordinators/registration', name: 'registration', element: ListGroups, roles: ['admin'] },
+
+
+
+
+
+    { path: 'theme', name: 'Theme', element: Colors, exact: true },
   { path: 'theme/colors', name: 'Colors', element: Colors },
   { path: 'theme/typography', name: 'Typography', element: Typography },
 
   { path: 'base', name: 'Base', element: Cards, exact: true, roles: ['admin'] },
-  { path: 'base/list-groups', name: 'List Groups', element: ListGroups, roles: ['admin'] },
-  { path: 'base/cursos-groups', name: 'Cursos Groups', element: CursosGroups, roles: ['admin'] },
-  { path: 'base/accordion', name: 'Accordion', element: Accordion, roles: ['admin'] },
-  { path: 'base/popovers', name: 'Popovers', element: Popovers, roles: ['admin'] },
-  { path: 'base/carousels', name: 'Carousel', element: Carousels, roles: ['admin'] },
-  { path: 'buttons/buttons', name: 'Buttons', element: Buttons, roles: ['admin'] },
-  { path: 'buttons/dropdowns', name: 'Dropdowns', element: Dropdowns, roles: ['admin'] },
-  { path: 'base/cards', name: 'Cards', element: Cards, roles: ['admin'] },
-  { path: 'base/collapses', name: 'Collapse', element: Collapses, roles: ['admin'] },
   { path: 'base/navs', name: 'Navs', element: Navs, roles: ['admin'] },
   { path: 'base/paginations', name: 'Paginations', element: Paginations, roles: ['admin'] },
-  {
-    path: 'base/placeholders',
-    name: 'Placeholders',
-    element: Placeholders,
-    roles: ['admin', 'Professor'],
-  },
+  { path: 'buttons/dropdowns', name: 'Dropdowns', element: Dropdowns, roles: ['admin'] },
 
   { path: 'base/breadcrumbs', name: 'Breadcrumbs', element: Breadcrumbs },
   { path: 'base/spinners', name: 'Spinners', element: Spinners },
@@ -414,10 +428,7 @@ const routes = [
   },
 
   // Gestão escolar
-  { path: 'notifications/alerts', name: 'Alerts', element: Alerts, roles: ['admin'] },
-  { path: 'notifications/badges', name: 'Badges', element: Badges, roles: ['admin'] },
   { path: 'notifications/modals', name: 'Modals', element: Modals, roles: ['admin'] },
-  { path: 'notifications/toasts', name: 'Toasts', element: Toasts, roles: ['admin'] },
   {
     path: 'notifications/relatorio-gerais',
     name: 'Relatório Gerais',

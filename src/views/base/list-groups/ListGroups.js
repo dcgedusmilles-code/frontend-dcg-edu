@@ -1,6 +1,6 @@
-// src/views/turmas/GestaoTurmasPage.jsx
 import React, { useEffect, useState } from 'react'
 import { CCard, CCardBody, CCardHeader, CCol, CContainer, CRow } from '@coreui/react'
+import axios from 'axios'
 import supabase from '../../../supaBaseClient'
 import ModalFiltrosTurmas from './ModalFiltrosTurmas'
 import ModalTurma from './ModalTurma'
@@ -11,6 +11,14 @@ const GestaoTurmasPage = () => {
   const [turmaEditando, setTurmaEditando] = useState(null)
   const [showConfirm, setShowConfirm] = useState(false)
   const [turmaParaExcluir, setTurmaParaExcluir] = useState(null)
+
+     // ✅ Base URL da API via variável de ambiente
+    const API_BASE_URL = import.meta.env.VITE_API_URL
+  
+    // ✅ Instância configurada do Axios
+    const api = axios.create({
+      baseURL: API_BASE_URL,
+    })
 
   useEffect(() => {
     fetchTurmas()
