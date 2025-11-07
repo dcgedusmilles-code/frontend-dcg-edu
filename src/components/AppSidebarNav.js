@@ -34,7 +34,7 @@ export const AppSidebarNav = ({ items }) => {
     return (
       <Component as="div" key={index}>
         {rest.to || rest.href ? (
-          <CNavLink
+          <CNavLink className="ml-6"
             {...(rest.to && { as: NavLink })}
             {...(rest.href && { target: '_blank', rel: 'noopener noreferrer' })}
             {...rest}
@@ -54,7 +54,10 @@ export const AppSidebarNav = ({ items }) => {
     return (
       <Component compact as="div" key={index} toggler={navLink(name, icon)} {...rest}>
         {items?.map((item, index) =>
-          item.items ? navGroup(item, index) : navItem(item, index, true),
+          item.items ? <CNavLink>
+            {navGroup(item, index)}
+          </CNavLink> 
+          : navItem(item, index, true),
         )}
       </Component>
     )
