@@ -11,10 +11,13 @@ import {
   CFormInput,
   CFormSelect,
 } from '@coreui/react'
-import supabase from '../../../supaBaseClient'
+import axios from '../../../api' // <-- seu axios configurado com baseURL
+
+const API = '/pedagogico/lesson-plan'
 
 const ModalAula = ({ aulaEditando, turmas, disciplinas, professores, onSalvo }) => {
   const [visible, setVisible] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({
     turma_id: '',
     disciplina_id: '',
@@ -38,6 +41,17 @@ const ModalAula = ({ aulaEditando, turmas, disciplinas, professores, onSalvo }) 
         sala: aulaEditando.sala || '',
         status: aulaEditando.status || 'Ativa',
       })
+    } else {
+      setForm({
+        turma_id: '',
+        disciplina_id: '',
+        professor_id: '',
+        data_aula: '',
+        hora_inicio: '',
+        hora_fim: '',
+        sala: '',
+        status: 'Ativa',
+      })
     }
   }, [aulaEditando])
 
@@ -47,18 +61,21 @@ const ModalAula = ({ aulaEditando, turmas, disciplinas, professores, onSalvo }) 
   }
 
   const handleSubmit = async () => {
-    if (aulaEditando) {
-      // Atualizar aula
-      const { error } = await supabase.from('aulas').update(form).eq('id', aulaEditando.id)
-      if (error) console.error(error)
-    } else {
-      // Criar nova aula
-      const { error } = await supabase.from('aulas').insert(form)
-      if (error) console.error(error)
+    try {
+      setLoading(true)
+      if (aulaEditando) {
+        await axios.put(`${API}/${aulaEditando.id}`, form)
+      } else {
+        await axios.post(API, form)
+      }
+      onSalvo?.()
+      setVisible(false)
+    } catch (error) {
+      console.error('Erro ao salvar aula:', error)
+      alert('Erro ao salvar aula. Verifique os dados.')
+    } finally {
+      setLoading(false)
     }
-
-    onSalvo?.()
-    setVisible(false)
   }
 
   return (
@@ -104,22 +121,12 @@ const ModalAula = ({ aulaEditando, turmas, disciplinas, professores, onSalvo }) 
 
           <CCol md={3}>
             <CFormLabel>Data da Aula</CFormLabel>
-            <CFormInput
-              type="date"
-              name="data_aula"
-              value={form.data_aula}
-              onChange={handleChange}
-            />
+            <CFormInput type="date" name="data_aula" value={form.data_aula} onChange={handleChange} />
           </CCol>
 
           <CCol md={3}>
             <CFormLabel>Hora Início</CFormLabel>
-            <CFormInput
-              type="time"
-              name="hora_inicio"
-              value={form.hora_inicio}
-              onChange={handleChange}
-            />
+            <CFormInput type="time" name="hora_inicio" value={form.hora_inicio} onChange={handleChange} />
           </CCol>
 
           <CCol md={3}>
@@ -129,13 +136,7 @@ const ModalAula = ({ aulaEditando, turmas, disciplinas, professores, onSalvo }) 
 
           <CCol md={3}>
             <CFormLabel>Sala</CFormLabel>
-            <CFormInput
-              type="text"
-              name="sala"
-              value={form.sala}
-              onChange={handleChange}
-              placeholder="Ex: 101"
-            />
+            <CFormInput type="text" name="sala" value={form.sala} onChange={handleChange} placeholder="Ex: 101" />
           </CCol>
 
           <CCol md={3}>
@@ -152,8 +153,8 @@ const ModalAula = ({ aulaEditando, turmas, disciplinas, professores, onSalvo }) 
         <CButton color="secondary" onClick={() => setVisible(false)}>
           Cancelar
         </CButton>
-        <CButton color="primary" onClick={handleSubmit}>
-          {aulaEditando ? 'Salvar' : 'Criar'}
+        <CButton color="primary" onClick={handleSubmit} disabled={loading}>
+          {loading ? 'Salvando...' : aulaEditando ? 'Salvar' : 'Criar'}
         </CButton>
       </CModalFooter>
     </CModal>

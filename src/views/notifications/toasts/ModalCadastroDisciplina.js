@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import supabase from '../../../supaBaseClient'
+const API = `/pedagogico/disciplines`
+import axios from '../../../api'
 
 const ModalCadastroDisciplina = ({ disciplinaEditando, onSalvo }) => {
   const [form, setForm] = useState({
@@ -33,35 +34,34 @@ const ModalCadastroDisciplina = ({ disciplinaEditando, onSalvo }) => {
       return
     }
 
-    let result
-    if (disciplinaEditando) {
-      result = await supabase
-        .from('disciplinas')
-        .update({
+    try {
+      if (disciplinaEditando) {
+        // PUT para atualizar
+        await axios.put(`${API}/${disciplinaEditando.id}`, {
           nome: form.nome,
           codigo: form.codigo,
           carga_horaria: parseInt(form.carga_horaria, 10),
           descricao: form.descricao,
         })
-        .eq('id', disciplinaEditando.id)
-    } else {
-      result = await supabase.from('disciplinas').insert([
-        {
+      } else {
+        // POST para criar
+        await axios.post(API, {
           nome: form.nome,
           codigo: form.codigo,
           carga_horaria: parseInt(form.carga_horaria, 10),
           descricao: form.descricao,
-        },
-      ])
-    }
+        })
+      }
 
-    if (result.error) {
-      alert('Erro: ' + result.error.message)
-    } else {
       onSalvo()
+
+      // Fechar modal após salvar
       const modalEl = document.getElementById('modalCadastroDisciplina')
       const modalInstance = window.bootstrap.Modal.getInstance(modalEl)
       modalInstance.hide()
+    } catch (error) {
+      console.error('Erro ao salvar disciplina:', error)
+      alert('Erro ao salvar disciplina. Verifique os dados e tente novamente.')
     }
   }
 
@@ -73,8 +73,9 @@ const ModalCadastroDisciplina = ({ disciplinaEditando, onSalvo }) => {
             <h5 className="modal-title">
               {disciplinaEditando ? 'Editar Disciplina' : 'Nova Disciplina'}
             </h5>
-            <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+            <button type="button" className="btn-close" data-bs-dismiss="modal" />
           </div>
+
           <div className="modal-body">
             <div className="mb-3">
               <label className="form-label">Nome*</label>
@@ -86,6 +87,7 @@ const ModalCadastroDisciplina = ({ disciplinaEditando, onSalvo }) => {
                 onChange={handleChange}
               />
             </div>
+
             <div className="mb-3">
               <label className="form-label">Código*</label>
               <input
@@ -96,6 +98,7 @@ const ModalCadastroDisciplina = ({ disciplinaEditando, onSalvo }) => {
                 onChange={handleChange}
               />
             </div>
+
             <div className="mb-3">
               <label className="form-label">Carga Horária (h)*</label>
               <input
@@ -106,6 +109,7 @@ const ModalCadastroDisciplina = ({ disciplinaEditando, onSalvo }) => {
                 onChange={handleChange}
               />
             </div>
+
             <div className="mb-3">
               <label className="form-label">Descrição</label>
               <textarea
@@ -114,9 +118,10 @@ const ModalCadastroDisciplina = ({ disciplinaEditando, onSalvo }) => {
                 rows="3"
                 value={form.descricao}
                 onChange={handleChange}
-              ></textarea>
+              />
             </div>
           </div>
+
           <div className="modal-footer">
             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
               Cancelar

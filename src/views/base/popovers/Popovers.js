@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
+import axios from '../../../api' // <-- seu axios configurado com baseURL
 import { CButton, CCard, CCardBody, CCardHeader, CCol, CRow, CContainer } from '@coreui/react'
 import ModalAula from './ModalAula'
 import ModalFiltrosAula from './ModalFiltrosAula'
-import supabase from '../../../supaBaseClient'
+const API = '/pedagogico/lesson-plan'
+
 
 const GestaoAulasPage = () => {
   const [aulas, setAulas] = useState([])
@@ -19,37 +21,34 @@ const GestaoAulasPage = () => {
     fetchSelects()
   }, [])
 
+  // ===============================
+  // Fetch de aulas com filtros
+  // ===============================
   const fetchAulas = async (filters = {}) => {
-    let query = supabase.from('aulas').select(`
-      id,
-      hora_inicio,
-      hora_fim,
-      sala,
-      status,
-      data_aula,
-      turmas:turma_id(id,nome),
-      professor:professor_id(id,nome),
-      disciplinas:disciplina_id(id,nome)
-    `) // <-- removi a vírgula aqui
-
-    if (filters.turma_id) query = query.eq('turma_id', filters.turma_id)
-    if (filters.disciplina_id) query = query.eq('disciplina_id', filters.disciplina_id)
-    if (filters.professor_id) query = query.eq('professor_id', filters.professor_id)
-    if (filters.status) query = query.eq('status', filters.status)
-
-    const { data, error } = await query
-    if (error) console.error(error)
-    else setAulas(data)
+    try {
+      const response = await axios.get(API, { params: filters })
+      setAulas(response.data)
+    } catch (error) {
+      console.error('Erro ao buscar aulas:', error)
+    }
   }
 
-
+  // ===============================
+  // Fetch para selects
+  // ===============================
   const fetchSelects = async () => {
-    const { data: turmas } = await supabase.from('turmas').select('*')
-    const { data: disciplinas } = await supabase.from('disciplinas').select('*')
-    const { data: professores } = await supabase.from('professores').select('*')
-    setTurmas(turmas || [])
-    setDisciplinas(disciplinas || [])
-    setProfessores(professores || [])
+    try {
+      const [turmasRes, disciplinasRes, professoresRes] = await Promise.all([
+        axios.get('/pedagogico/classroom'),
+        axios.get('/pedagogico/disciplines'),
+        axios.get('/pedagogico/teachers'),
+      ])
+      setTurmas(turmasRes.data || [])
+      setDisciplinas(disciplinasRes.data || [])
+      setProfessores(professoresRes.data || [])
+    } catch (error) {
+      console.error('Erro ao buscar dados para selects:', error)
+    }
   }
 
   const abrirModalNovo = () => {
@@ -72,7 +71,12 @@ const GestaoAulasPage = () => {
         </CCol>
       </CRow>
 
-      <ModalFiltrosAula onFiltrar={fetchAulas} turmas={turmas} disciplinas={disciplinas} professores={professores} />
+      <ModalFiltrosAula
+        turmas={turmas}
+        disciplinas={disciplinas}
+        professores={professores}
+        onFiltrar={fetchAulas}
+      />
 
       <CCard className="mt-4">
         <CCardHeader>Lista de Aulas</CCardHeader>
@@ -95,8 +99,8 @@ const GestaoAulasPage = () => {
               {aulas.map((aula) => (
                 <tr key={aula.id}>
                   <td>{aula.id}</td>
-                  <td>{aula.turmas?.nome}</td>
-                  <td>{aula.disciplinas?.nome}</td>
+                  <td>{aula.turma?.nome}</td>
+                  <td>{aula.disciplina?.nome}</td>
                   <td>{aula.professor?.nome}</td>
                   <td>{aula.data_aula}</td>
                   <td>

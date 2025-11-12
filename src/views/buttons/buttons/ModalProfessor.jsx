@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import supabase from '../../../supaBaseClient'
+import axios from '../../../api'
+
+const API_PROFESSORES = '/pedagogico/teachers'
+const API_UNIDADES = '/pedagogico/unidades'
+const API_CURSOS = '/pedagogico/cursos'
+const API_ENDERECOS = '/pedagogico/enderecos'
 
 const ModalProfessor = ({ professorEditando, onSalvo }) => {
   const [formData, setFormData] = useState({
@@ -9,6 +14,7 @@ const ModalProfessor = ({ professorEditando, onSalvo }) => {
     especialidade: '',
     status: 'Ativo',
     unidade_id: '',
+    curso_id: '',
     rua: '',
     casa_numero: '',
     bairro: '',
@@ -18,6 +24,7 @@ const ModalProfessor = ({ professorEditando, onSalvo }) => {
 
   const [unidades, setUnidades] = useState([])
   const [cursos, setCursos] = useState([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     fetchUnidades()
@@ -43,12 +50,21 @@ const ModalProfessor = ({ professorEditando, onSalvo }) => {
   }, [professorEditando])
 
   const fetchUnidades = async () => {
-    const { data, error } = await supabase.from('unidades').select('id, nome')
-    if (!error) setUnidades(data)
+    try {
+      const { data } = await axios.get(API_UNIDADES)
+      setUnidades(data || [])
+    } catch (error) {
+      console.error('Erro ao carregar unidades:', error)
+    }
   }
+
   const fetchCursos = async () => {
-    const { data, error } = await supabase.from('cursos').select('id, nome')
-    if (!error) setCursos(data)
+    try {
+      const { data } = await axios.get(API_CURSOS)
+      setCursos(data || [])
+    } catch (error) {
+      console.error('Erro ao carregar cursos:', error)
+    }
   }
 
   const resetForm = () => {
@@ -74,53 +90,51 @@ const ModalProfessor = ({ professorEditando, onSalvo }) => {
   }
 
   const handleSave = async () => {
-    let endereco_id = professorEditando?.endereco_id
+    setLoading(true)
+    try {
+      let enderecoId = professorEditando?.endereco_id
 
-    if (!endereco_id) {
-      const { data: enderecoData, error: enderecoError } = await supabase
-        .from('enderecos')
-        .insert([
-          {
-            rua: formData.rua,
-            casa_numero: formData.casa_numero,
-            bairro: formData.bairro,
-            municipio: formData.municipio,
-            provincia: formData.provincia,
-          },
-        ])
-        .select()
-        .single()
-
-      if (enderecoError) {
-        console.error('Erro ao salvar endereço:', enderecoError)
-        return
+      // ✅ Criar ou atualizar endereço
+      if (!enderecoId) {
+        const { data: enderecoData } = await axios.post(API_ENDERECOS, {
+          rua: formData.rua,
+          casa_numero: formData.casa_numero,
+          bairro: formData.bairro,
+          municipio: formData.municipio,
+          provincia: formData.provincia,
+        })
+        enderecoId = enderecoData.id
       }
-      endereco_id = enderecoData.id
-    }
 
-    const payload = {
-      nome: formData.nome,
-      email: formData.email,
-      telefone: formData.telefone,
-      especialidade: formData.especialidade,
-      status: formData.status,
-      unidade_id: formData.unidade_id,
-      curso_id: formData.curso_id,
-      endereco_id,
-    }
+      const payload = {
+        nome: formData.nome,
+        email: formData.email,
+        telefone: formData.telefone,
+        especialidade: formData.especialidade,
+        status: formData.status,
+        unidade_id: formData.unidade_id,
+        curso_id: formData.curso_id,
+        endereco_id: enderecoId,
+      }
 
-    let result
-    if (professorEditando) {
-      result = await supabase.from('professores').update(payload).eq('id', professorEditando.id)
-    } else {
-      result = await supabase.from('professores').insert([payload])
-    }
+      if (professorEditando) {
+        await axios.put(`${API_PROFESSORES}/${professorEditando.id}`, payload)
+      } else {
+        await axios.post(API_PROFESSORES, payload)
+      }
 
-    if (result.error) {
-      console.error('Erro ao salvar professor:', result.error)
-    } else {
       onSalvo()
       resetForm()
+
+      // Fecha o modal
+      const modalEl = document.getElementById('modalProfessor')
+      const modalInstance = window.bootstrap.Modal.getInstance(modalEl)
+      modalInstance.hide()
+    } catch (error) {
+      console.error('Erro ao salvar professor:', error)
+      alert('Erro ao salvar professor. Verifique os dados.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -220,6 +234,8 @@ const ModalProfessor = ({ professorEditando, onSalvo }) => {
                   ))}
                 </select>
               </div>
+
+              {/* Endereço */}
               <div className="col-md-6">
                 <label>Rua</label>
                 <input
@@ -276,8 +292,8 @@ const ModalProfessor = ({ professorEditando, onSalvo }) => {
             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
               Cancelar
             </button>
-            <button type="button" className="btn btn-primary" onClick={handleSave}>
-              Salvar
+            <button type="button" className="btn btn-primary" onClick={handleSave} disabled={loading}>
+              {loading ? 'Salvando...' : 'Salvar'}
             </button>
           </div>
         </div>

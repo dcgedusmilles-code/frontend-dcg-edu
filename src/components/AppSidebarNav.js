@@ -54,9 +54,9 @@ export const AppSidebarNav = ({ items }) => {
     return (
       <Component compact as="div" key={index} toggler={navLink(name, icon)} {...rest}>
         {items?.map((item, index) =>
-          item.items ? <CNavLink>
-            {navGroup(item, index)}
-          </CNavLink> 
+          item.items ? 
+            navGroup(item, index)
+          
           : navItem(item, index, true),
         )}
       </Component>

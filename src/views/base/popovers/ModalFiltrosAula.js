@@ -18,17 +18,22 @@ const ModalFiltrosAula = ({ onFiltrar, turmas = [], disciplinas = [], professore
   }
 
   const handleSubmit = () => {
-    onFiltrar?.(filters)
+    // Converte perPage para número
+    const payload = {
+      ...filters,
+      perPage: Number(filters.perPage),
+    }
+    onFiltrar?.(payload)
   }
 
   return (
     <CRow className="align-items-end g-2 mb-3">
       <CCol md={2}>
         <CFormSelect name="perPage" value={filters.perPage} onChange={handleChange}>
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={25}>25</option>
-          <option value={50}>50</option>
+          <option value={5}>5 por página</option>
+          <option value={10}>10 por página</option>
+          <option value={25}>25 por página</option>
+          <option value={50}>50 por página</option>
         </CFormSelect>
       </CCol>
 
@@ -42,7 +47,7 @@ const ModalFiltrosAula = ({ onFiltrar, turmas = [], disciplinas = [], professore
 
       <CCol md={2}>
         <CFormSelect name="turma_id" value={filters.turma_id} onChange={handleChange}>
-          <option value="">Turma</option>
+          <option value="">Todas as Turmas</option>
           {turmas.map((t) => (
             <option key={t.id} value={t.id}>
               {t.nome}
@@ -53,7 +58,7 @@ const ModalFiltrosAula = ({ onFiltrar, turmas = [], disciplinas = [], professore
 
       <CCol md={2}>
         <CFormSelect name="disciplina_id" value={filters.disciplina_id} onChange={handleChange}>
-          <option value="">Disciplina</option>
+          <option value="">Todas as Disciplinas</option>
           {disciplinas.map((d) => (
             <option key={d.id} value={d.id}>
               {d.nome}
@@ -64,7 +69,7 @@ const ModalFiltrosAula = ({ onFiltrar, turmas = [], disciplinas = [], professore
 
       <CCol md={2}>
         <CFormSelect name="professor_id" value={filters.professor_id} onChange={handleChange}>
-          <option value="">Professor</option>
+          <option value="">Todos os Professores</option>
           {professores.map((p) => (
             <option key={p.id} value={p.id}>
               {p.nome}
@@ -75,10 +80,10 @@ const ModalFiltrosAula = ({ onFiltrar, turmas = [], disciplinas = [], professore
 
       <CCol md={2}>
         <CFormSelect name="status" value={filters.status} onChange={handleChange}>
-          <option value="">Status</option>
-          <option value="Agendada">Agendada</option>
-          <option value="Realizada">Realizada</option>
+          <option value="">Todos os Status</option>
+          <option value="Ativa">Ativa</option>
           <option value="Cancelada">Cancelada</option>
+          <option value="Remarcada">Remarcada</option>
         </CFormSelect>
       </CCol>
 
