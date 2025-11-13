@@ -924,7 +924,49 @@ const _nav = [
 
 
 
+  {
+    component: CNavTitle,
+    name: 'Configurações do Sistema',
+  },
 
+           // =======================
+      // 🧭 CCONFIGURAÇÕES DO MENU
+      // =======================
+
+      {
+        component: CNavGroup,
+        name: 'Configurações',
+        icon: <CIcon icon={cilSchool} customClassName="nav-icon" />,
+        roles: ['admin', 'coordenador'],
+        items: [
+           {
+            component: CNavItem,
+            name: 'Departamentos',
+            to: '/dashboard/config/internal-departments',
+          },
+          {
+            component: CNavItem,
+            name: 'Coordenadores',
+            to: '/dashboard/config/coordenadores',
+          },
+          {
+            component: CNavItem,
+            name: 'Cursos',
+            to: '/dashboard/config/cursos',
+          },
+          {
+            component: CNavItem,
+            name: 'Turma',
+            to: '/dashboard/config/turma',
+          },
+          {
+            component: CNavItem,
+            name: 'Unidade',
+            to: '/dashboard/config/unidades',
+          },
+
+        ],
+      },
 
   /**
    *

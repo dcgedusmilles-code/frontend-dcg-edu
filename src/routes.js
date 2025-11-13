@@ -11,7 +11,6 @@ const Cards = React.lazy(() => import('./views/base/cards/Cards'))
 const Carousels = React.lazy(() => import('./views/base/carousels/Carousels'))
 const Collapses = React.lazy(() => import('./views/base/collapses/Collapses'))
 const ListGroups = React.lazy(() => import('./views/base/list-groups/ListGroups'))
-const CursosGroups = React.lazy(() => import('./views/base/cursos-groups/GestaoCursosPage'))
 const Navs = React.lazy(() => import('./views/base/navs/Navs'))
 const Paginations = React.lazy(() => import('./views/base/paginations/Paginations'))
 const Placeholders = React.lazy(() => import('./views/base/placeholders/Placeholders'))
@@ -93,7 +92,6 @@ const RelatorioFinanceiro = React.lazy(
 
 //RH
 const ListaCargos = React.lazy(() => import('./views/rh/cargos/ListaCargos'))
-const ListaDepartamentos = React.lazy(() => import('./views/rh/departamentos/ListaDepartamentos'))
 const ListaFuncionarios = React.lazy(() => import('./views/rh/funcionarios/ListaFuncionarios'))
 const GerarFolha = React.lazy(() => import('./views/rh/folha-pagamento/GerarFolha'))
 const RecibosPagamento = React.lazy(() => import('./views/rh/folha-pagamento/RecibosPagamento'))
@@ -117,6 +115,12 @@ const UsuariosPerfis = React.lazy(() => import('./views/configuracoes/pages/Usua
 const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
+const Turma = React.lazy(() => import('./views/configuracoes/Turma/Turma'))
+const Coordenadores = React.lazy(() => import('./views/configuracoes/coordenadores/GestaoCoordenadoresTreinamentoPage'))
+const Cursos = React.lazy(() => import('./views/configuracoes/cursos/GestaoCursosPage'))
+const Unidade = React.lazy(() => import('./views/configuracoes/Unidade/Unidade'))
+const Departamentos = React.lazy(() => import('./views/configuracoes/departamentos/GestaoDepartamentosInternosPage'))
+
 const routes = [
   {
     path: 'forms/checks-radios',
@@ -131,9 +135,6 @@ const routes = [
     roles: ['admin', 'rh', 'comercial', 'Professor', 'Aluno'],
   },
 
-
-
-
   {
     path: 'pedagogico/academic-calendar',
     name: 'academic-calendar',
@@ -145,22 +146,41 @@ const routes = [
   { path: 'pedagogico/disciplines', name: 'disciplines', element: Toasts, roles: ['admin'] },
 
   { path: 'secretaria-academica/students', name: 'students', element: Accordion, roles: ['admin'] },
-  { path: 'secretaria-academica/enrollment', name: 'enrollment', element: Carousels, roles: ['admin'] },
+  {
+    path: 'secretaria-academica/enrollment',
+    name: 'enrollment',
+    element: Carousels,
+    roles: ['admin'],
+  },
   { path: 'secretaria-academica/transfers', name: 'transfers', element: Alerts, roles: ['admin'] },
-  { path: 'secretaria-academica/academic-documents', name: 'academic-documents', element: Collapses, roles: ['admin'] },
+  {
+    path: 'secretaria-academica/academic-documents',
+    name: 'academic-documents',
+    element: Collapses,
+    roles: ['admin'],
+  },
   { path: 'secretaria-academica/protocol', name: 'protocol', element: Badges, roles: ['admin'] },
-  { path: 'secretaria-academica/academic-records', name: 'academic-records', element: Cards, roles: ['admin'] },
+  {
+    path: 'secretaria-academica/academic-records',
+    name: 'academic-records',
+    element: Cards,
+    roles: ['admin'],
+  },
 
+  // {
+  //   path: 'training-coordinators/courses',
+  //   name: 'courses',
+  //   element: CursosGroups,
+  //   roles: ['admin'],
+  // },
+  {
+    path: 'training-coordinators/registration',
+    name: 'registration',
+    element: ListGroups,
+    roles: ['admin'],
+  },
 
-
-  { path: 'training-coordinators/courses', name: 'courses', element: CursosGroups, roles: ['admin'] },
-  { path: 'training-coordinators/registration', name: 'registration', element: ListGroups, roles: ['admin'] },
-
-
-
-
-
-    { path: 'theme', name: 'Theme', element: Colors, exact: true },
+  { path: 'theme', name: 'Theme', element: Colors, exact: true },
   { path: 'theme/colors', name: 'Colors', element: Colors },
   { path: 'theme/typography', name: 'Typography', element: Typography },
 
@@ -353,12 +373,7 @@ const routes = [
     element: ListaCargos,
     roles: ['admin', 'rh'],
   },
-  {
-    path: 'rh/departamentos',
-    name: 'Departamentos',
-    element: ListaDepartamentos,
-    roles: ['admin', 'rh'],
-  },
+
   {
     path: 'rh/funcionarios',
     name: 'Funcionarios',
@@ -390,12 +405,14 @@ const routes = [
     roles: ['admin', 'rh'],
   },
 
+  // Configurações
   {
     path: 'config/config-geral',
     name: 'Configurações Gereais ',
     element: ConfiguracoesGerais,
     roles: ['admin'],
   },
+
   {
     path: 'config/integracoes',
     name: 'Integrações',
@@ -425,6 +442,41 @@ const routes = [
     name: 'Perfil do Usuário',
     element: UsuariosPerfis,
     roles: ['admin', 'Aluno'],
+  },
+
+  {
+    path: 'config/coordenadores',
+    name: 'Coordenadores',
+    element: Coordenadores,
+    roles: ['admin'],
+  },
+
+  {
+    path: 'config/cursos',
+    name: 'Cursos',
+    element: Cursos,
+    roles: ['admin'],
+  },
+
+  {
+    path: 'config/turma',
+    name: 'Turma',
+    element: Turma,
+    roles: ['admin'],
+  },
+
+  {
+    path: 'config/unidades',
+    name: 'Unidades',
+    element: Unidade,
+    roles: ['admin'],
+  },
+
+    {
+    path: 'config/internal-departments',
+    name: 'Departamentos',
+    element: Departamentos,
+    roles: ['admin', 'rh'],
   },
 
   // Gestão escolar
