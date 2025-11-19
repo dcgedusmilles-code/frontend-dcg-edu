@@ -24,18 +24,9 @@ const GestaoCursosPage = () => {
     }
   }
 
-  // const fetchCoordenadores = async () => {
-  //   try {
-  //     const response = await axios.get('/training-coordinators/training-coordinators')
-  //     setCoordenadores(response.data)
-  //   } catch (error) {
-  //     console.error('Erro ao carregar coordenadores:', error)
-  //   }
-  // }
-
     const fetchCoordenadores = async (filters = {}) => {
       try {
-        const response = await axios.get('/training-coordinators/training-coordinators', {
+        const response = await axios.get('/training-coordinators/coordinator/coordenadores', {
           params: filters,
         })
         setCoordenadores(response.data)

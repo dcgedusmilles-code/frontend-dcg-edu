@@ -110,12 +110,6 @@ const _nav = [
           },
           {
             component: CNavItem,
-            name: 'Disciplinas',
-            to: '/dashboard/pedagogico/disciplines',
-            roles: ['admin'],
-          },
-          {
-            component: CNavItem,
             name: 'Professores',
             to: '/dashboard/pedagogico/teachers',
             roles: ['admin'],
@@ -963,6 +957,17 @@ const _nav = [
             component: CNavItem,
             name: 'Unidade',
             to: '/dashboard/config/unidades',
+          },
+          {
+            component: CNavItem,
+            name: 'Endereço',
+            to: '/dashboard/config/enderecos',
+          },
+           {
+            component: CNavItem,
+            name: 'Disciplinas',
+            to: '/dashboard/pedagogico/disciplines',
+            roles: ['admin'],
           },
 
         ],

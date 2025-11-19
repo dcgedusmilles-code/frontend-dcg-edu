@@ -115,11 +115,19 @@ const UsuariosPerfis = React.lazy(() => import('./views/configuracoes/pages/Usua
 const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
-const Turma = React.lazy(() => import('./views/configuracoes/Turma/Turma'))
-const Coordenadores = React.lazy(() => import('./views/configuracoes/coordenadores/GestaoCoordenadoresTreinamentoPage'))
+const Turma = React.lazy(() => import('./views/configuracoes/Turma/GestaoTurmasPage'))
+const Coordenadores = React.lazy(
+  () => import('./views/configuracoes/coordenadores/GestaoCoordenadoresTreinamentoPage'),
+)
 const Cursos = React.lazy(() => import('./views/configuracoes/cursos/GestaoCursosPage'))
 const Unidade = React.lazy(() => import('./views/configuracoes/Unidade/Unidade'))
-const Departamentos = React.lazy(() => import('./views/configuracoes/departamentos/GestaoDepartamentosInternosPage'))
+const Departamentos = React.lazy(
+  () => import('./views/configuracoes/departamentos/GestaoDepartamentosInternosPage'),
+)
+
+const Enderecos = React.lazy(
+  () => import('./views/configuracoes/enderecos/Enderecos'),
+)
 
 const routes = [
   {
@@ -471,8 +479,14 @@ const routes = [
     element: Unidade,
     roles: ['admin'],
   },
+  {
+    path: 'config/enderecos',
+    name: 'Endereços',
+    element: Enderecos,
+    roles: ['admin'],
+  },
 
-    {
+  {
     path: 'config/internal-departments',
     name: 'Departamentos',
     element: Departamentos,

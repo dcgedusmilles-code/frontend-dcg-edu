@@ -1,156 +1,117 @@
 import React, { useEffect, useState } from 'react'
-import { CCard, CCardBody, CCardHeader, CCol, CContainer, CRow } from '@coreui/react'
-import supabase from '../../../supaBaseClient'
-import { AppBreadcrumb, PaginationWrapper } from '../../../components'
-import ModalFiltros from './ModalFiltros'
+import {
+  CButton, CCard, CCardBody, CCardHeader,
+  CCol, CRow, CContainer
+} from '@coreui/react'
+import api from '../../../api'
 
+import ModalUnidade from './ModalCriarUnidade'
+import ModalFiltrosUnidade from './ModalFiltrarUnidade'
 
-const EmissaoDocumentosPage = () => {
-  const [alunos, setAlunos] = useState([])
-  const [loading, setLoading] = useState(false)
+const GestaoUnidadesPage = () => {
+  const [unidades, setUnidades] = useState([])
+  const [enderecos, setEnderecos] = useState([])
+
+  const [modalAberto, setModalAberto] = useState(false)
+  const [unidadeEditando, setUnidadeEditando] = useState(null)
 
   useEffect(() => {
-    fetchAlunos()
+    fetchUnidades()
+    fetchEnderecos()
   }, [])
 
-  const fetchAlunos = async (filters = {}) => {
-    setLoading(true)
-    let query = supabase.from('alunos').select(`
-      id,
-      nome,
-      matricula_id,
-      matricula:matricula_id ( id ),
-      turma:turma_id ( id, nome ),
-      status
-    `)
-
-    // Filtros básicos
-    if (filters.nome) {
-      query = query.ilike('nome', `%${filters.nome}%`)
+  const fetchUnidades = async (filters = {}) => {
+    try {
+      const res = await api.get('/units/address', { params: filters })
+      setUnidades(res.data)
+    } catch (err) {
+      console.error(err)
     }
-    if (filters.matricula) {
-      query = query.ilike('matricula', `%${filters.matricula}%`)
-    }
-    if (filters.turmaId) {
-      query = query.eq('turma.id', filters.turmaId)
-    }
-
-    const { data, error } = await query
-    if (error) {
-      console.error('Erro ao buscar alunos:', error)
-    } else {
-      setAlunos(data || [])
-    }
-    setLoading(false)
   }
 
-  const handleFiltrar = (filters) => {
-    fetchAlunos(filters)
+  const fetchEnderecos = async () => {
+    const res = await api.get('/user/address')
+    setEnderecos(res.data)
   }
 
-  const emitirDocumento = (aluno, tipo) => {
-    // Aqui você conecta com sua API para gerar PDF
-    console.log(`Emitindo ${tipo} para o aluno:`, aluno)
-    alert(`Documento "${tipo}" emitido para ${aluno.nome}`)
+  const abrirNovo = () => {
+    setUnidadeEditando(null)
+    setModalAberto(true)
+  }
+
+  const abrirEditar = (u) => {
+    setUnidadeEditando(u)
+    setModalAberto(true)
   }
 
   return (
-    <CRow>
-      <CCol xs={12}>
-        <CCardHeader className="my-4">
-          <strong>Emissão de Documentos Escolares</strong>
-        </CCardHeader>
+    <CContainer className="my-4">
 
-        <CContainer className="px-4">
-          <ModalFiltros
-            onFiltrar={handleFiltrar}
-            campos={[
-              { label: 'Nome do Aluno', name: 'nome' },
-              { label: 'Matrícula', name: 'matricula' },
-              { label: 'Turma', name: 'turmaId', tipo: 'select', opcoes: [] }, // Carregar turmas do banco se necessário
-            ]}
-          />
-        </CContainer>
+      <CRow className="mb-3">
+        <CCol>
+          <CButton color="success" onClick={abrirNovo}>Nova Unidade</CButton>
+        </CCol>
+      </CRow>
 
-        <CCard className="my-4">
-          <CCardBody>
-            {loading && <p>Carregando alunos...</p>}
-            {!loading && (
-              <PaginationWrapper data={alunos} itemsPerPage={5}>
-                {(paginaAtual) => (
-                  <table className="table table-bordered table-striped">
-                    <thead className="table-dark">
-                      <tr>
-                        <th>#</th>
-                        <th>Nome</th>
-                        <th>Matrícula</th>
-                        <th>Turma</th>
-                        <th>Status</th>
-                        <th>Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {paginaAtual.map((aluno) => (
-                        <tr key={aluno.id}>
-                          <td>{aluno.id}</td>
-                          <td>{aluno.nome}</td>
-                          <td>{aluno.matricula?.id}</td>
-                          <td>{aluno.turma?.nome ?? '-'}</td>
-                          <td>{aluno.status ?? '-'}</td>
-                          <td>
-                            <div className="dropdown">
-                              <button
-                                className="btn btn-secondary btn-sm dropdown-toggle"
-                                type="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                              >
-                                Emitir
-                              </button>
-                              <ul className="dropdown-menu">
-                                <li>
-                                  <button
-                                    className="dropdown-item"
-                                    onClick={() => emitirDocumento(aluno, 'Histórico Escolar')}
-                                  >
-                                    <i className="fa fa-file-text"></i> Histórico Escolar
-                                  </button>
-                                </li>
-                                <li>
-                                  <button
-                                    className="dropdown-item"
-                                    onClick={() =>
-                                      emitirDocumento(aluno, 'Declaração de Matrícula')
-                                    }
-                                  >
-                                    <i className="fa fa-file-text"></i> Declaração de Matrícula
-                                  </button>
-                                </li>
-                                <li>
-                                  <button
-                                    className="dropdown-item"
-                                    onClick={() =>
-                                      emitirDocumento(aluno, 'Certificado de Conclusão')
-                                    }
-                                  >
-                                    <i className="fa fa-certificate"></i> Certificado de Conclusão
-                                  </button>
-                                </li>
-                              </ul>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </PaginationWrapper>
-            )}
-          </CCardBody>
-        </CCard>
-      </CCol>
-    </CRow>
+      <ModalFiltrosUnidade enderecos={enderecos} onFiltrar={fetchUnidades} />
+
+      <CCard>
+        <CCardHeader>Lista de Unidades</CCardHeader>
+
+        <CCardBody>
+          <table className="table table-bordered table-striped">
+            <thead className="table-dark">
+              <tr>
+                <th>#</th>
+                <th>Nome</th>
+                <th>Sigla</th>
+                <th>Tipo</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>Status</th>
+                <th>Endereço</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {unidades.map((u) => (
+                <tr key={u.id}>
+                  <td>{u.id}</td>
+                  <td>{u.nome}</td>
+                  <td>{u.sigla}</td>
+                  <td>{u.tipo}</td>
+                  <td>{u.email}</td>
+                  <td>{u.telefone}</td>
+                  <td>{u.status}</td>
+                  <td>{u.endereco?.rua} - {u.endereco?.cidade}</td>
+
+                  <td>
+                    <CButton size="sm" color="info" onClick={() => abrirEditar(u)}>
+                      Editar
+                    </CButton>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+
+          </table>
+        </CCardBody>
+      </CCard>
+
+      {modalAberto && (
+        <ModalUnidade
+          unidadeEditando={unidadeEditando}
+          enderecos={enderecos}
+          onSalvo={() => {
+            setModalAberto(false)
+            fetchUnidades()
+          }}
+        />
+      )}
+
+    </CContainer>
   )
 }
 
-export default EmissaoDocumentosPage
+export default GestaoUnidadesPage

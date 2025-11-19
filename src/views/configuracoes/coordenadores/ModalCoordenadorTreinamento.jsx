@@ -41,9 +41,9 @@ const ModalCoordenadorTreinamento = ({ coordenadorEditando, departamentos = [], 
   const handleSubmit = async () => {
     try {
       if (coordenadorEditando) {
-        await axios.put(`/training-coordinators/training-coordinators/${coordenadorEditando.id}`, form)
+        await axios.put(`/training-coordinators/coordinator/coordenadores/${coordenadorEditando.id}`, form)
       } else {
-        await axios.post(`/training-coordinators/training-coordinators`, form)
+        await axios.post(`/training-coordinators/coordinator/coordenadores`, form)
       }
       onSalvo?.()
       onClose()

@@ -51,6 +51,7 @@ const ModalCurso = ({ cursoEditando, coordenadores = [], onSalvo, onClose }) => 
 
   const handleSubmit = async () => {
     try {
+      console.log("form",form)
       if (cursoEditando) {
         await axios.put(`/training-coordinators/courses/${cursoEditando.id}`, form)
       } else {

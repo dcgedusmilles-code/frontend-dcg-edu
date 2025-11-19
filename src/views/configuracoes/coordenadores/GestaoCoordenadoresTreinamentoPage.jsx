@@ -17,7 +17,7 @@ const GestaoCoordenadoresTreinamentoPage = () => {
 
   const fetchCoordenadores = async (filters = {}) => {
     try {
-      const response = await axios.get('/training-coordinators/training-coordinators', {
+      const response = await axios.get('/training-coordinators/coordinator/coordenadores', {
         params: filters,
       })
       setCoordenadores(response.data)
