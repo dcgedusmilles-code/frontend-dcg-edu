@@ -1,164 +1,129 @@
-import React, { useState, useEffect } from 'react'
+// src/views/pedagogico/planoDeAula/PlanoDeAulaCreateModal.jsx
+
+import React, { useEffect, useState } from 'react'
 import {
-  CCol,
-  CModal,
-  CModalHeader,
-  CModalBody,
-  CModalFooter,
-  CButton,
-  CForm,
-  CFormLabel,
-  CFormInput,
-  CFormSelect,
+  CModal, CModalHeader, CModalTitle, CModalBody,
+  CModalFooter, CButton, CForm, CFormInput,
+  CFormTextarea, CFormSelect,
 } from '@coreui/react'
 import axios from '../../../api' // <-- seu axios configurado com baseURL
 
-const API = '/pedagogico/lesson-plan'
-
-const ModalAula = ({ aulaEditando, turmas, disciplinas, professores, onSalvo }) => {
-  const [visible, setVisible] = useState(true)
-  const [loading, setLoading] = useState(false)
+const PlanoDeAulaCreateModal = ({ visible, onClose, onCreated }) => {
   const [form, setForm] = useState({
-    turma_id: '',
+    titulo: '',
+    objetivos: '',
+    conteudo: '',
+    metodologia: '',
+    avaliacao: '',
     disciplina_id: '',
     professor_id: '',
-    data_aula: '',
-    hora_inicio: '',
-    hora_fim: '',
-    sala: '',
-    status: 'Ativa',
+    turma_id: '',
   })
 
+  const [disciplinas, setDisciplinas] = useState([])
+  const [professores, setProfessores] = useState([])
+  const [turmas, setTurmas] = useState([])
+
   useEffect(() => {
-    if (aulaEditando) {
-      setForm({
-        turma_id: aulaEditando.turma_id || '',
-        disciplina_id: aulaEditando.disciplina_id || '',
-        professor_id: aulaEditando.professor_id || '',
-        data_aula: aulaEditando.data_aula || '',
-        hora_inicio: aulaEditando.hora_inicio || '',
-        hora_fim: aulaEditando.hora_fim || '',
-        sala: aulaEditando.sala || '',
-        status: aulaEditando.status || 'Ativa',
-      })
-    } else {
-      setForm({
-        turma_id: '',
-        disciplina_id: '',
-        professor_id: '',
-        data_aula: '',
-        hora_inicio: '',
-        hora_fim: '',
-        sala: '',
-        status: 'Ativa',
-      })
-    }
-  }, [aulaEditando])
+    axios.get('/pedagogico/disciplines').then(res => setDisciplinas(res.data))
+    axios.get('/pedagogico/teachers').then(res => setProfessores(res.data))
+    axios.get('/training-coordinators/class-teacher/turmas').then(res => setTurmas(res.data))
+  }, [])
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleSubmit = async () => {
-    try {
-      setLoading(true)
-      if (aulaEditando) {
-        await axios.put(`${API}/${aulaEditando.id}`, form)
-      } else {
-        await axios.post(API, form)
-      }
-      onSalvo?.()
-      setVisible(false)
-    } catch (error) {
-      console.error('Erro ao salvar aula:', error)
-      alert('Erro ao salvar aula. Verifique os dados.')
-    } finally {
-      setLoading(false)
-    }
+  const handleSubmit = () => {
+    axios.post('/pedagogico/lesson-plan', form)
+      .then(() => {
+        onCreated()
+        onClose()
+      })
+      .catch(err => console.error('Erro ao criar plano:', err))
   }
 
   return (
-    <CModal visible={visible} onClose={() => setVisible(false)} backdrop="static" size="lg">
-      <CModalHeader>{aulaEditando ? 'Editar Aula' : 'Nova Aula'}</CModalHeader>
+    <CModal visible={visible} onClose={onClose} size="lg">
+      <CModalHeader>
+        <CModalTitle>Criar Plano de Aula</CModalTitle>
+      </CModalHeader>
+
       <CModalBody>
-        <CForm className="row g-3">
-          <CCol md={4}>
-            <CFormLabel>Turma</CFormLabel>
-            <CFormSelect name="turma_id" value={form.turma_id} onChange={handleChange}>
-              <option value="">Selecione a Turma</option>
-              {turmas.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.nome}
-                </option>
-              ))}
-            </CFormSelect>
-          </CCol>
+        <CForm>
 
-          <CCol md={4}>
-            <CFormLabel>Disciplina</CFormLabel>
-            <CFormSelect name="disciplina_id" value={form.disciplina_id} onChange={handleChange}>
-              <option value="">Selecione a Disciplina</option>
-              {disciplinas.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.nome}
-                </option>
-              ))}
-            </CFormSelect>
-          </CCol>
+          <CFormInput
+            label="Título"
+            value={form.titulo}
+            onChange={(e) => setForm({ ...form, titulo: e.target.value })}
+          />
 
-          <CCol md={4}>
-            <CFormLabel>Professor</CFormLabel>
-            <CFormSelect name="professor_id" value={form.professor_id} onChange={handleChange}>
-              <option value="">Selecione o Professor</option>
-              {professores.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.nome}
-                </option>
-              ))}
-            </CFormSelect>
-          </CCol>
+          <CFormTextarea
+            label="Objetivos"
+            rows={3}
+            value={form.objetivos}
+            onChange={(e) => setForm({ ...form, objetivos: e.target.value })}
+          />
 
-          <CCol md={3}>
-            <CFormLabel>Data da Aula</CFormLabel>
-            <CFormInput type="date" name="data_aula" value={form.data_aula} onChange={handleChange} />
-          </CCol>
+          <CFormTextarea
+            label="Conteúdo"
+            rows={3}
+            value={form.conteudo}
+            onChange={(e) => setForm({ ...form, conteudo: e.target.value })}
+          />
 
-          <CCol md={3}>
-            <CFormLabel>Hora Início</CFormLabel>
-            <CFormInput type="time" name="hora_inicio" value={form.hora_inicio} onChange={handleChange} />
-          </CCol>
+          <CFormTextarea
+            label="Metodologia"
+            rows={3}
+            value={form.metodologia}
+            onChange={(e) => setForm({ ...form, metodologia: e.target.value })}
+          />
 
-          <CCol md={3}>
-            <CFormLabel>Hora Fim</CFormLabel>
-            <CFormInput type="time" name="hora_fim" value={form.hora_fim} onChange={handleChange} />
-          </CCol>
+          <CFormTextarea
+            label="Avaliação"
+            rows={3}
+            value={form.avaliacao}
+            onChange={(e) => setForm({ ...form, avaliacao: e.target.value })}
+          />
 
-          <CCol md={3}>
-            <CFormLabel>Sala</CFormLabel>
-            <CFormInput type="text" name="sala" value={form.sala} onChange={handleChange} placeholder="Ex: 101" />
-          </CCol>
+          <CFormSelect
+            label="Disciplina"
+            value={form.disciplina_id}
+            onChange={(e) => setForm({ ...form, disciplina_id: e.target.value })}
+          >
+            <option>Selecionar</option>
+            {disciplinas.map((d) => (
+              <option key={d.id} value={d.id}>{d.nome}</option>
+            ))}
+          </CFormSelect>
 
-          <CCol md={3}>
-            <CFormLabel>Status</CFormLabel>
-            <CFormSelect name="status" value={form.status} onChange={handleChange}>
-              <option value="Ativa">Ativa</option>
-              <option value="Cancelada">Cancelada</option>
-              <option value="Remarcada">Remarcada</option>
-            </CFormSelect>
-          </CCol>
+          <CFormSelect
+            label="Professor"
+            value={form.professor_id}
+            onChange={(e) => setForm({ ...form, professor_id: e.target.value })}
+          >
+            <option>Selecionar</option>
+            {professores.map((p) => (
+              <option key={p.id} value={p.id}>{p.nome}</option>
+            ))}
+          </CFormSelect>
+
+          <CFormSelect
+            label="Turma"
+            value={form.turma_id}
+            onChange={(e) => setForm({ ...form, turma_id: e.target.value })}
+          >
+            <option>Selecionar</option>
+            {turmas.map((t) => (
+              <option key={t.id} value={t.id}>{t.nome}</option>
+            ))}
+          </CFormSelect>
+
         </CForm>
       </CModalBody>
+
       <CModalFooter>
-        <CButton color="secondary" onClick={() => setVisible(false)}>
-          Cancelar
-        </CButton>
-        <CButton color="primary" onClick={handleSubmit} disabled={loading}>
-          {loading ? 'Salvando...' : aulaEditando ? 'Salvar' : 'Criar'}
-        </CButton>
+        <CButton color="secondary" onClick={onClose}>Cancelar</CButton>
+        <CButton color="primary" onClick={handleSubmit}>Salvar</CButton>
       </CModalFooter>
     </CModal>
   )
 }
 
-export default ModalAula
+export default PlanoDeAulaCreateModal
