@@ -1,200 +1,98 @@
 import React, { useState } from 'react'
-import { CCol } from '@coreui/react'
 
 const ModalFiltros = ({ onFiltrar }) => {
   const [filters, setFilters] = useState({
-    perPage: 10,
-    startDate: '',
-    endDate: '',
-    keyFilter: 'null',
     search: '',
-    orderBy: '',
-    status: '',
+    unidade_id: '',
+    turma_id: '',
     sexo: '',
+    status: '',
   })
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFilters((prev) => ({ ...prev, [name]: value }))
+    setFilters({ ...filters, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = () => {
-    onFiltrar?.(filters)
-  }
-
-  const handleReset = () => {
-    const resetFilters = {
-      perPage: 10,
-      startDate: '',
-      endDate: '',
-      keyFilter: 'null',
-      search: '',
-      orderBy: '',
-      status: '',
-      sexo: '',
-    }
-    setFilters(resetFilters)
-    onFiltrar?.(resetFilters)
+  const aplicarFiltros = () => {
+    onFiltrar(filters)
+    document.getElementById('btnCloseModalFiltros').click()
   }
 
   return (
-    <CCol xs={12}>
-      <div className="filter-modal">
-        <div className="modal-body">
-          <div className="row g-2 align-items-end">
-            {/* Itens por página */}
-            <div className="col-md-1 col-3">
-              <select
-                name="perPage"
-                value={filters.perPage}
-                onChange={handleChange}
-                className="form-control"
-              >
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
-            </div>
+    <div className="modal fade" id="modalFiltros" tabIndex="-1">
+      <div className="modal-dialog">
+        <div className="modal-content">
 
-            {/* Data de nascimento (início e fim) */}
-            <div className="col-md-2 col-6">
-              <input
-                type="date"
-                name="startDate"
-                value={filters.startDate}
-                onChange={handleChange}
-                className="form-control"
-                placeholder="Data início"
-              />
-            </div>
+          <div className="modal-header">
+            <h5 className="modal-title">Filtros de Alunos</h5>
+            <button id="btnCloseModalFiltros" className="btn-close" data-bs-dismiss="modal"></button>
+          </div>
 
-            <div className="col-md-2 col-6">
-              <input
-                type="date"
-                name="endDate"
-                value={filters.endDate}
-                onChange={handleChange}
-                className="form-control"
-                placeholder="Data fim"
-              />
-            </div>
+          <div className="modal-body">
+            <div className="row g-3">
 
-            {/* Tipo de filtro */}
-            <div className="col-md-2">
-              <select
-                name="keyFilter"
-                value={filters.keyFilter}
-                onChange={handleChange}
-                className="form-control"
-              >
-                <option value="null">Filtrar por...</option>
-                <option value="id">ID</option>
-                <option value="nome">Nome</option>
-                <option value="email">E-mail</option>
-                <option value="telefone">Telefone</option>
-                <option value="documento">Documento</option>
-              </select>
-            </div>
-
-            {/* Campo de pesquisa */}
-            <div className="col-md-3">
-              <div className="position-relative">
+              <div className="col-12">
+                <label className="form-label">Pesquisar por nome, email ou documento</label>
                 <input
-                  type="text"
                   name="search"
+                  className="form-control"
                   value={filters.search}
                   onChange={handleChange}
-                  placeholder="Pesquisar..."
-                  className="form-control"
-                />
-                <i
-                  className="fa fa-search position-absolute"
-                  style={{
-                    right: 10,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    fontSize: 18,
-                    color: '#777',
-                  }}
                 />
               </div>
-            </div>
 
-            {/* Ordenar por */}
-            <div className="col-md-2">
-              <select
-                name="orderBy"
-                value={filters.orderBy}
-                onChange={handleChange}
-                className="form-control"
-              >
-                <option value="">Ordenar por...</option>
-                <option value="nome">Nome</option>
-                <option value="createdAt">Data de Criação</option>
-                <option value="data_nascimento">Data de Nascimento</option>
-              </select>
-            </div>
+              <div className="col-md-6">
+                <label className="form-label">Unidade ID</label>
+                <input
+                  name="unidade_id"
+                  type="number"
+                  className="form-control"
+                  value={filters.unidade_id}
+                  onChange={handleChange}
+                />
+              </div>
 
-            {/* Status */}
-            <div className="col-md-2">
-              <select
-                name="status"
-                value={filters.status}
-                onChange={handleChange}
-                className="form-control"
-              >
-                <option value="">Status</option>
-                <option value="Ativo">Ativo</option>
-                <option value="Inativo">Inativo</option>
-                <option value="Transferido">Transferido</option>
-                <option value="Concluído">Concluído</option>
-              </select>
-            </div>
+              <div className="col-md-6">
+                <label className="form-label">Turma ID</label>
+                <input
+                  name="turma_id"
+                  type="number"
+                  className="form-control"
+                  value={filters.turma_id}
+                  onChange={handleChange}
+                />
+              </div>
 
-            {/* Sexo */}
-            <div className="col-md-2">
-              <select
-                name="sexo"
-                value={filters.sexo}
-                onChange={handleChange}
-                className="form-control"
-              >
-                <option value="">Sexo</option>
-                <option value="Masculino">Masculino</option>
-                <option value="Feminino">Feminino</option>
-              </select>
-            </div>
+              <div className="col-md-6">
+                <label className="form-label">Sexo</label>
+                <select name="sexo" className="form-select" value={filters.sexo} onChange={handleChange}>
+                  <option value="">Todos</option>
+                  <option value="M">Masculino</option>
+                  <option value="F">Feminino</option>
+                </select>
+              </div>
 
-            {/* Botões */}
-            <div className="col-md-3 d-flex gap-2">
-              <button
-                type="button"
-                className="btn btn-primary btn-sm"
-                onClick={handleSubmit}
-              >
-                <i className="fa fa-search" /> Filtrar
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm"
-                onClick={handleReset}
-              >
-                <i className="fa fa-undo" /> Limpar
-              </button>
-              <button
-                type="button"
-                className="btn btn-success btn-sm"
-                disabled={false}
-              >
-                <i className="fa fa-file-excel-o" /> Excel
-              </button>
+              <div className="col-md-6">
+                <label className="form-label">Status</label>
+                <input
+                  name="status"
+                  className="form-control"
+                  value={filters.status}
+                  onChange={handleChange}
+                />
+              </div>
+
             </div>
           </div>
+
+          <div className="modal-footer">
+            <button className="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            <button className="btn btn-primary" onClick={aplicarFiltros}>Aplicar Filtros</button>
+          </div>
+
         </div>
       </div>
-    </CCol>
+    </div>
   )
 }
 

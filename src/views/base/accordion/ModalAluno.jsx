@@ -1,145 +1,88 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from '../../../api'
-import Swal from 'sweetalert2'
+import { CFormSelect } from '@coreui/react'
 
-export default function ModalAluno({ alunoEditando, onSalvo }) {
-  const [formData, setFormData] = useState({
+const ModalAluno = ({ alunoEditando, onSalvo }) => {
+  const [turmas, setTurmas] = useState([])
+  const [unidades, setUnidades] = useState([])
+
+  const [form, setForm] = useState({
     nome: '',
+    unidade_id: '',
+    turma_id: '',
     data_nascimento: '',
+    sexo: '',
     email: '',
     telefone: '',
-    sexo: '',
     documento: '',
     endereco: '',
-    status: 'ativo',
+    status: '',
   })
 
-  const [usarResponsavelExistente, setUsarResponsavelExistente] = useState(false)
-  const [responsaveis, setResponsaveis] = useState([])
-  const [responsavelSelecionado, setResponsavelSelecionado] = useState('')
-  const [novoResponsavel, setNovoResponsavel] = useState({
-    nome: '',
-    telefone: '',
-    email: '',
-    parentesco: '',
-    endereco: '',
-  })
-
-  const [documentos, setDocumentos] = useState([])
-
-  // 🔹 Carrega encarregados existentes se marcado
   useEffect(() => {
-    if (usarResponsavelExistente) fetchResponsaveis()
-  }, [usarResponsavelExistente])
+    fetchSelects
+  }, [])
 
-  const fetchResponsaveis = async () => {
-    try {
-      const { data } = await axios.get('/secretaria-academica/in-charge')
-      setResponsaveis(data)
-    } catch (error) {
-      console.error('Erro ao carregar encarregados:', error)
-    }
-  }
-
-  // 🔹 Preenche formulário ao editar
   useEffect(() => {
     if (alunoEditando) {
-      setFormData({
+      setForm({
         nome: alunoEditando.nome || '',
-        data_nascimento: alunoEditando.data_nascimento || '',
+        unidade_id: alunoEditando.unidade_id || '',
+        turma_id: alunoEditando.turma_id || '',
+        data_nascimento: alunoEditando.data_nascimento
+          ? alunoEditando.data_nascimento.substring(0, 10)
+          : '',
+        sexo: alunoEditando.sexo || '',
         email: alunoEditando.email || '',
         telefone: alunoEditando.telefone || '',
-        sexo: alunoEditando.sexo || '',
         documento: alunoEditando.documento || '',
         endereco: alunoEditando.endereco || '',
-        status: alunoEditando.status || 'ativo',
+        status: alunoEditando.status || '',
       })
     } else {
-      resetForm()
+      setForm({
+        nome: '',
+        unidade_id: '',
+        turma_id: '',
+        data_nascimento: '',
+        sexo: '',
+        email: '',
+        telefone: '',
+        documento: '',
+        endereco: '',
+        status: '',
+      })
     }
   }, [alunoEditando])
 
-  const resetForm = () => {
-    setFormData({
-      nome: '',
-      data_nascimento: '',
-      email: '',
-      telefone: '',
-      sexo: '',
-      documento: '',
-      endereco: '',
-      status: 'ativo',
-    })
-    setNovoResponsavel({
-      nome: '',
-      telefone: '',
-      email: '',
-      parentesco: '',
-      endereco: '',
-    })
-    setResponsavelSelecionado('')
-    setUsarResponsavelExistente(false)
-    setDocumentos([])
+  const fetchSelects = async () => {
+    const res = await api.get('/training-coordinators/class-teacher/turmas', { params: filters })
+    const resAddress = await api.get('/units/address', { params: filters })
+
+    setTurmas(res.data)
+    setUnidades(resAddress.data)
   }
 
-  const salvarAluno = async (e) => {
-    e.preventDefault()
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
 
-    if (!formData.nome.trim()) {
-      Swal.fire('Atenção', 'O nome do aluno é obrigatório', 'warning')
-      return
-    }
-
+  const handleSubmit = async () => {
     try {
-      let encarregadoId = responsavelSelecionado
+      const token = localStorage.getItem('accessToken')
+      const headers = { Authorization: `Bearer ${token}` }
+      const url = `/secretaria-academica/students`
 
-      // 🔹 Cria novo encarregado, se necessário
-      if (!usarResponsavelExistente) {
-        if (!novoResponsavel.nome.trim()) {
-          Swal.fire('Atenção', 'O nome do encarregado é obrigatório', 'warning')
-          return
-        }
-
-        const { data: novoEnc } = await axios.post('/secretaria-academica/in-charge', novoResponsavel)
-        encarregadoId = novoEnc.id
-      }
-
-      // 🔹 Cria ou atualiza aluno
-      let alunoId
       if (alunoEditando) {
-        const { data } = await axios.put(`/secretaria-academica/students/${alunoEditando.id}`, formData)
-        alunoId = data.id
+        await axios.put(`${url}/${alunoEditando.id}`, form, { headers })
       } else {
-        const { data } = await axios.post('/secretaria-academica/students', formData)
-        alunoId = data.id
+        await axios.post(url, form, { headers })
       }
 
-      // 🔹 Relaciona aluno e encarregado
-      if (encarregadoId) {
-        await axios.post('/secretaria-academica/student-in-charge', {
-          aluno_id: alunoId,
-          encarregado_id: encarregadoId,
-          tipo_responsabilidade: 'geral',
-        })
-      }
-
-      // 🔹 Upload de documentos
-      if (documentos.length > 0) {
-        const formDataFiles = new FormData()
-        documentos.forEach((file) => formDataFiles.append('files', file))
-        await axios.post(`/secretaria-academica/students/${alunoId}/documentos`, formDataFiles, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        })
-      }
-
-      Swal.fire('Sucesso', 'Aluno salvo com sucesso!', 'success')
       onSalvo()
-      resetForm()
-      const modal = bootstrap.Modal.getInstance(document.getElementById('modalAluno'))
-      modal.hide()
-    } catch (error) {
-      console.error('Erro ao salvar aluno:', error)
-      Swal.fire('Erro', 'Falha ao salvar aluno', 'error')
+      document.getElementById('btnCloseModalAluno').click()
+    } catch (err) {
+      console.error('Erro ao salvar aluno:', err.response?.data || err.message)
     }
   }
 
@@ -147,128 +90,164 @@ export default function ModalAluno({ alunoEditando, onSalvo }) {
     <div className="modal fade" id="modalAluno" tabIndex="-1">
       <div className="modal-dialog modal-lg">
         <div className="modal-content">
-          <form onSubmit={salvarAluno}>
-            <div className="modal-header">
-              <h5 className="modal-title">{alunoEditando ? 'Editar Aluno' : 'Novo Aluno'}</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+          <div className="modal-header">
+            <h5 className="modal-title">{alunoEditando ? 'Editar Aluno' : 'Registrar Aluno'}</h5>
+            <button id="btnCloseModalAluno" className="btn-close" data-bs-dismiss="modal"></button>
+          </div>
 
-            <div className="modal-body row g-3">
-              {/* 🔸 Dados do Aluno */}
+          <div className="modal-body">
+            <div className="row g-3">
               <div className="col-md-6">
                 <label className="form-label">Nome</label>
-                <input className="form-control" value={formData.nome} onChange={(e) => setFormData({ ...formData, nome: e.target.value })} />
+                <input
+                  name="nome"
+                  className="form-control"
+                  value={form.nome}
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
-              <div className="col-md-6">
-                <label className="form-label">Data de Nascimento</label>
-                <input type="date" className="form-control" value={formData.data_nascimento} onChange={(e) => setFormData({ ...formData, data_nascimento: e.target.value })} />
-              </div>
+              <div className="col-md-3">
+                {/* <label className="form-label">Unidade ID</label>
+                <input
+                  name="unidade_id"
+                  type="number"
+                  className="form-control"
+                  value={form.unidade_id}
+                  onChange={handleChange}
+                /> */}
 
-              <div className="col-md-6">
-                <label className="form-label">Sexo</label>
-                <select className="form-select" value={formData.sexo} onChange={(e) => setFormData({ ...formData, sexo: e.target.value })}>
+                <CFormSelect
+                  className="mb-3"
+                  name="unidade_id"
+                  label="Unidade"
+                  value={form.unidade_id}
+                  onChange={handleChange}
+                >
                   <option value="">Selecione...</option>
-                  <option value="Masculino">Masculino</option>
-                  <option value="Feminino">Feminino</option>
-                </select>
+                  {unidades.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.nome} - {e.endereco?.rua}
+                    </option>
+                  ))}
+                </CFormSelect>
               </div>
 
-              <div className="col-md-6">
-                <label className="form-label">Documento</label>
-                <input className="form-control" value={formData.documento} onChange={(e) => setFormData({ ...formData, documento: e.target.value })} />
+              <div className="col-md-3">
+                {/* <label className="form-label">Turma ID</label>
+                <input
+                  name="turma_id"
+                  type="number"
+                  className="form-control"
+                  value={form.turma_id}
+                  onChange={handleChange}
+                /> */}
+                <CFormSelect
+                  className="mb-3"
+                  name="turma_id"
+                  label="Turma"
+                  value={form.turma_id}
+                  onChange={handleChange}
+                >
+                  <option value="">Selecione...</option>
+                  {turmas.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.nome} - {e.curso?.titulo}
+                    </option>
+                  ))}
+                </CFormSelect>
+              </div>
+
+              <div className="col-md-4">
+                <label className="form-label">Data de Nascimento</label>
+                <input
+                  name="data_nascimento"
+                  type="date"
+                  className="form-control"
+                  value={form.data_nascimento}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="col-md-2">
+                <label className="form-label">Sexo</label>
+                <select
+                  name="sexo"
+                  className="form-select"
+                  value={form.sexo}
+                  onChange={handleChange}
+                >
+                  <option value="">--</option>
+                  <option value="M">Masculino</option>
+                  <option value="F">Feminino</option>
+                </select>
               </div>
 
               <div className="col-md-6">
                 <label className="form-label">Email</label>
-                <input type="email" className="form-control" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+                <input
+                  name="email"
+                  className="form-control"
+                  value={form.email}
+                  onChange={handleChange}
+                />
               </div>
 
-              <div className="col-md-6">
+              <div className="col-md-4">
                 <label className="form-label">Telefone</label>
-                <input className="form-control" value={formData.telefone} onChange={(e) => setFormData({ ...formData, telefone: e.target.value })} />
+                <input
+                  name="telefone"
+                  className="form-control"
+                  value={form.telefone}
+                  onChange={handleChange}
+                />
               </div>
 
-              <div className="col-md-12">
+              <div className="col-md-4">
+                <label className="form-label">Documento</label>
+                <input
+                  name="documento"
+                  className="form-control"
+                  value={form.documento}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="col-md-8">
                 <label className="form-label">Endereço</label>
-                <input className="form-control" value={formData.endereco} onChange={(e) => setFormData({ ...formData, endereco: e.target.value })} />
+                <input
+                  name="endereco"
+                  className="form-control"
+                  value={form.endereco}
+                  onChange={handleChange}
+                />
               </div>
 
-              <div className="col-md-6">
+              <div className="col-md-4">
                 <label className="form-label">Status</label>
-                <select className="form-select" value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
-                  <option value="ativo">Ativo</option>
-                  <option value="inativo">Inativo</option>
-                </select>
-              </div>
-
-              {/* 🔸 Responsável */}
-              <div className="col-12 mt-3">
-                <div className="form-check mb-2">
-                  <input className="form-check-input" type="checkbox" checked={usarResponsavelExistente} onChange={(e) => setUsarResponsavelExistente(e.target.checked)} />
-                  <label className="form-check-label">Usar encarregado existente</label>
-                </div>
-              </div>
-
-              {usarResponsavelExistente ? (
-                <div className="col-md-12">
-                  <label className="form-label">Selecione o encarregado</label>
-                  <select className="form-select" value={responsavelSelecionado} onChange={(e) => setResponsavelSelecionado(e.target.value)}>
-                    <option value="">Selecione...</option>
-                    {responsaveis.map((r) => (
-                      <option key={r.id} value={r.id}>
-                        {r.nome} - {r.telefone}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ) : (
-                <>
-                  <div className="col-md-6">
-                    <label className="form-label">Nome do Encarregado</label>
-                    <input className="form-control" value={novoResponsavel.nome} onChange={(e) => setNovoResponsavel({ ...novoResponsavel, nome: e.target.value })} />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label">Telefone</label>
-                    <input className="form-control" value={novoResponsavel.telefone} onChange={(e) => setNovoResponsavel({ ...novoResponsavel, telefone: e.target.value })} />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label">Email</label>
-                    <input type="email" className="form-control" value={novoResponsavel.email} onChange={(e) => setNovoResponsavel({ ...novoResponsavel, email: e.target.value })} />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label className="form-label">Parentesco</label>
-                    <input className="form-control" value={novoResponsavel.parentesco} onChange={(e) => setNovoResponsavel({ ...novoResponsavel, parentesco: e.target.value })} />
-                  </div>
-
-                  <div className="col-md-12">
-                    <label className="form-label">Endereço</label>
-                    <input className="form-control" value={novoResponsavel.endereco} onChange={(e) => setNovoResponsavel({ ...novoResponsavel, endereco: e.target.value })} />
-                  </div>
-                </>
-              )}
-
-              {/* 🔸 Documentos */}
-              <div className="col-md-12 mt-3">
-                <label className="form-label">Documentos (PDF/DOCX)</label>
-                <input type="file" multiple className="form-control" accept=".pdf,.docx" onChange={(e) => setDocumentos(Array.from(e.target.files))} />
+                <input
+                  name="status"
+                  className="form-control"
+                  value={form.status}
+                  onChange={handleChange}
+                />
               </div>
             </div>
+          </div>
 
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
-                Cancelar
-              </button>
-              <button type="submit" className="btn btn-primary">
-                {alunoEditando ? 'Atualizar' : 'Salvar'}
-              </button>
-            </div>
-          </form>
+          <div className="modal-footer">
+            <button className="btn btn-secondary" data-bs-dismiss="modal">
+              Cancelar
+            </button>
+            <button className="btn btn-primary" onClick={handleSubmit}>
+              {alunoEditando ? 'Salvar Alterações' : 'Registrar'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
   )
 }
+
+export default ModalAluno
