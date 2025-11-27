@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
 import { CCard, CCardBody, CCardHeader, CCol, CContainer, CRow, CSpinner } from '@coreui/react'
 import { ModalConfirmacao, PaginationWrapper } from '../../../components'
 import ModalFiltros from './ModalFiltros'
 import ModalMatricula from './ModalMatricula'
-
-
+import axios from '../../../api'
 
 const MatriculasPage = () => {
   const [matriculas, setMatriculas] = useState([])
@@ -14,13 +12,6 @@ const MatriculasPage = () => {
   const [showConfirm, setShowConfirm] = useState(false)
   const [loading, setLoading] = useState(true)
 
-   // ✅ Base URL da API via variável de ambiente
-  const API_BASE_URL = import.meta.env.VITE_API_URL
-
-  // ✅ Instância configurada do Axios
-  const api = axios.create({
-    baseURL: API_BASE_URL,
-  })
 
   useEffect(() => {
     fetchMatriculas()
@@ -29,7 +20,7 @@ const MatriculasPage = () => {
   const fetchMatriculas = async () => {
     try {
       setLoading(true)
-      const { data } = await api.get('/api/secretaria-academica/enrollment')
+      const { data } = await axios.get('/secretaria-academica/enrollment')
       setMatriculas(data || [])
       setMatriculasFiltradas(data || [])
     } catch (error) {
@@ -66,7 +57,7 @@ const MatriculasPage = () => {
           case 'turma':
             return m.turma?.nome?.toLowerCase().includes(termo)
           case 'curso':
-            return m.turma?.curso?.nome?.toLowerCase().includes(termo)
+            return m.turma?.curso?.titulo?.toLowerCase().includes(termo)
           default:
             return true
         }
@@ -84,7 +75,7 @@ const MatriculasPage = () => {
   const handleConfirmDelete = async () => {
     if (matriculaParaExcluir) {
       try {
-        await api.delete(`/api/secretaria-academica/enrollment/${matriculaParaExcluir.id}`)
+        await axios.delete(`/secretaria-academica/enrollment/${matriculaParaExcluir.id}`)
         setMatriculas((prev) => prev.filter((m) => m.id !== matriculaParaExcluir.id))
         setMatriculasFiltradas((prev) => prev.filter((m) => m.id !== matriculaParaExcluir.id))
       } catch (error) {
@@ -147,9 +138,9 @@ const MatriculasPage = () => {
                           <td>{m.id}</td>
                           <td>{m.aluno?.nome ?? '-'}</td>
                           <td>{m.turma?.nome ?? '-'}</td>
-                          <td>{m.turma?.curso?.nome ?? '-'}</td>
+                          <td>{m.turma?.curso?.titulo ?? '-'}</td>
                           <td>{m.turma?.professor?.nome ?? '-'}</td>
-                          <td>{m.turma?.professor?.curso?.nome ?? '-'}</td>
+                          <td>{m.turma?.professor?.curso?.titulo ?? '-'}</td>
                           <td>{new Date(m.data_matricula).toLocaleDateString('pt-PT')}</td>
                           <td>
                             <div className="dropdown">

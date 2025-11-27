@@ -172,7 +172,7 @@ const ModalFiltros = ({ onFiltrar, alunos = [], cursos = [] }) => {
               >
                 <option value="null">Todos os cursos</option>
                 {cursos.map((c) => (
-                  <option key={c.id} value={c.id}>{c.nome}</option>
+                  <option key={c.id} value={c.id}>{c.titulo}</option>
                 ))}
               </select>
             </div>

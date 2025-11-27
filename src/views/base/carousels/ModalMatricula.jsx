@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import axios from '../../../api'
 
 
 export default function ModalMatricula({ matriculaEditando, onSalvo }) {
@@ -14,14 +14,6 @@ export default function ModalMatricula({ matriculaEditando, onSalvo }) {
 
   const [professor, setProfessor] = useState(null)
   const [cursoProfessor, setCursoProfessor] = useState(null)
-
-   // ✅ Base URL da API via variável de ambiente
-  const API_BASE_URL = import.meta.env.VITE_API_URL
-
-  // ✅ Instância configurada do Axios
-  const api = axios.create({
-    baseURL: API_BASE_URL,
-  })
   
 
   // Carregar alunos e cursos
@@ -32,7 +24,7 @@ export default function ModalMatricula({ matriculaEditando, onSalvo }) {
 
   const fetchAlunos = async () => {
     try {
-      const { data } = await api.get('/secretaria-academica/alunos')
+      const { data } = await axios.get('/secretaria-academica/students')
       setAlunos(data)
     } catch (err) {
       console.error('Erro ao buscar alunos:', err)
@@ -41,7 +33,7 @@ export default function ModalMatricula({ matriculaEditando, onSalvo }) {
 
   const fetchCursos = async () => {
     try {
-      const { data } = await api.get('/secretaria-academica/cursos')
+      const { data } = await axios.get('/training-coordinators/courses')
       setCursos(data)
     } catch (err) {
       console.error('Erro ao buscar cursos:', err)
@@ -51,7 +43,8 @@ export default function ModalMatricula({ matriculaEditando, onSalvo }) {
   const fetchTurmas = async (cursoId) => {
     if (!cursoId) return
     try {
-      const { data } = await api.get(`/secretaria-academica/turmas?curso_id=${cursoId}`)
+      const { data } = await axios.get(`/training-coordinators/class-teacher/turmas?curso_id=${cursoId}`)
+      // const { data } = await axios.get('/training-coordinators/class-teacher')
       setTurmas(data || [])
     } catch (err) {
       console.error('Erro ao buscar turmas:', err)
@@ -96,9 +89,9 @@ export default function ModalMatricula({ matriculaEditando, onSalvo }) {
 
     try {
       if (matriculaEditando) {
-        await api.put(`/secretaria-academica/matriculas/${matriculaEditando.id}`, payload)
+        await axios.put(`/secretaria-academica/enrollment/${matriculaEditando.id}`, payload)
       } else {
-        await api.post('/secretaria-academica/matriculas', payload)
+        await axios.post('/secretaria-academica/enrollment', payload)
       }
 
       onSalvo()
@@ -114,6 +107,7 @@ export default function ModalMatricula({ matriculaEditando, onSalvo }) {
   useEffect(() => {
     if (cursoId) {
       fetchTurmas(cursoId)
+      console.log("cursoId",cursoId)
     } else {
       setTurmas([])
     }
@@ -175,7 +169,7 @@ export default function ModalMatricula({ matriculaEditando, onSalvo }) {
                     <option value="">Selecione...</option>
                     {cursos.map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.nome}
+                        {c.titulo}
                       </option>
                     ))}
                   </select>
@@ -218,7 +212,7 @@ export default function ModalMatricula({ matriculaEditando, onSalvo }) {
                   <input
                     type="text"
                     className="form-control"
-                    value={cursoProfessor?.nome || ''}
+                    value={cursoProfessor?.titulo || ''}
                     disabled
                   />
                 </div>
