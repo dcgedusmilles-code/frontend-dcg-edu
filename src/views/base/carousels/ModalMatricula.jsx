@@ -87,6 +87,8 @@ export default function ModalMatricula({ matriculaEditando, onSalvo }) {
       data_matricula: dataMatricula || new Date().toISOString().split('T')[0],
     }
 
+    console.log("payload payload", payload)
+    return
     try {
       if (matriculaEditando) {
         await axios.put(`/secretaria-academica/enrollment/${matriculaEditando.id}`, payload)

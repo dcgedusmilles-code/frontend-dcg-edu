@@ -1,178 +1,83 @@
+
+
+
+// Component 3: TransferScreen.js
+// Combines logic, API calls and UI
+
 import React, { useEffect, useState } from 'react'
-import supabase from '../../../supaBaseClient'
-import ModalCadastroUnidade from './ModalCadastroUnidade'
-import { PaginationWrapper, ModalConfirmacao } from '../../../components'
+import axios from '../../../api'
+import { CButton, CContainer } from '@coreui/react'
+import { TransferForm } from './TransferForm'
+import { TransferSummary } from './TransferSummary'
 
-const GestaoUnidades = () => {
+const TransferScreen = () => {
+  const [students, setStudents] = useState([])
+  const [cursos, setCursos] = useState([])
+  const [turmas, setTurmas] = useState([])
   const [unidades, setUnidades] = useState([])
-  const [filtros, setFiltros] = useState({ nome: '', cidade: '', estado: '' })
-  const [unidadeEditando, setUnidadeEditando] = useState(null)
-  const [showConfirm, setShowConfirm] = useState(false)
-  const [unidadeParaExcluir, setUnidadeParaExcluir] = useState(null)
+  const [selectedAluno, setSelectedAluno] = useState(null)
 
+  const [form, setForm] = useState({
+    aluno_id: '',
+    curso_origem: '',
+    curso_destino: '',
+    turma_id: '',
+    unidade_id: '',
+    status: 'Em Análise',
+  })
+
+  // Load data
   useEffect(() => {
-    fetchUnidades()
+    axios.get('/secretaria-academica/students').then((res) => setStudents(res.data))
+    axios.get('/training-coordinators/courses').then((res) => setCursos(res.data))
+    axios.get('/training-coordinators/class-teacher/turmas').then((res) => setTurmas(res.data))
+    axios.get('/units/address').then((res) => setUnidades(res.data))
   }, [])
 
-  const fetchUnidades = async () => {
-    let query = supabase.from('unidades').select('*').order('nome', { ascending: true })
-
-    if (filtros.nome) query = query.ilike('nome', `%${filtros.nome}%`)
-    if (filtros.cidade) query = query.ilike('cidade', `%${filtros.cidade}%`)
-    if (filtros.estado) query = query.ilike('estado', `%${filtros.estado}%`)
-
-    const { data, error } = await query
-    if (!error) setUnidades(data)
-  }
-
-  const confirmarExclusao = (unidade) => {
-    setUnidadeParaExcluir(unidade)
-    setShowConfirm(true)
-  }
-
-  const handleConfirmDelete = async () => {
-    if (unidadeParaExcluir) {
-      await supabase.from('unidades').delete().eq('id', unidadeParaExcluir.id)
-      fetchUnidades()
+  // Load aluno origin data
+  useEffect(() => {
+    if (form.aluno_id) {
+      const aluno = students.find((a) => a.id == form.aluno_id)
+      setSelectedAluno(aluno)
+      setForm((prev) => ({ ...prev, curso_origem: aluno?.curso || '' }))
     }
-    setShowConfirm(false)
+  }, [form.aluno_id, students])
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setForm((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleTransferir = async () => {
+    await axios.post('/secretaria-academica/transfers', form)
+    await axios.patch(`/secretaria-academica/students/${form.aluno_id}`, {
+      curso_id: form.curso_destino,
+      turma_id: form.turma_id,
+      unidade_id: form.unidade_id,
+    })
+    alert('Transferência realizada com sucesso!')
   }
 
   return (
-    <div>
-      <h4 className="mb-4">Gestão de Unidades Escolares</h4>
+    <CContainer>
+      <h3 className="mb-4">Transferência de Aluno</h3>
 
-      {/* Filtros */}
-      <div className="card mb-3">
-        <div className="card-header">
-          <strong>Filtros</strong>
-        </div>
-        <div className="card-body">
-          <div className="row g-3">
-            <div className="col-md-4">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Nome da Unidade"
-                value={filtros.nome}
-                onChange={(e) => setFiltros({ ...filtros, nome: e.target.value })}
-              />
-            </div>
-            <div className="col-md-3">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Cidade"
-                value={filtros.cidade}
-                onChange={(e) => setFiltros({ ...filtros, cidade: e.target.value })}
-              />
-            </div>
-            <div className="col-md-3">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Estado"
-                value={filtros.estado}
-                onChange={(e) => setFiltros({ ...filtros, estado: e.target.value })}
-              />
-            </div>
-            <div className="col-md-2">
-              <button className="btn btn-primary w-100" onClick={fetchUnidades}>
-                Filtrar
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Botão Nova Unidade */}
-      <div className="mb-3 text-end">
-        <button
-          className="btn btn-success"
-          data-bs-toggle="modal"
-          data-bs-target="#modalCadastroUnidade"
-          onClick={() => setUnidadeEditando(null)}
-        >
-          Nova Unidade
-        </button>
-      </div>
-
-      {/* Tabela */}
-      <div className="card">
-        <div className="card-body">
-          <PaginationWrapper data={unidades} itemsPerPage={5}>
-            {(paginaAtual) => (
-              <table className="table table-bordered table-striped">
-                <thead className="table-dark">
-                  <tr>
-                    <th>#</th>
-                    <th>Nome</th>
-                    <th>Cidade</th>
-                    <th>Estado</th>
-                    <th>Endereço</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginaAtual.map((u) => (
-                    <tr key={u.id}>
-                      <td>{u.id}</td>
-                      <td>{u.nome}</td>
-                      <td>{u.cidade}</td>
-                      <td>{u.estado}</td>
-                      <td>{u.endereco}</td>
-                      <td>
-                        <div className="dropdown">
-                          <button
-                            className="btn btn-secondary btn-sm dropdown-toggle"
-                            data-bs-toggle="dropdown"
-                          >
-                            Ações
-                          </button>
-                          <ul className="dropdown-menu">
-                            <li>
-                              <button
-                                className="dropdown-item"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modalCadastroUnidade"
-                                onClick={() => setUnidadeEditando(u)}
-                              >
-                                Editar
-                              </button>
-                            </li>
-                            <li>
-                              <button
-                                className="dropdown-item text-danger"
-                                onClick={() => confirmarExclusao(u)}
-                              >
-                                Excluir
-                              </button>
-                            </li>
-                          </ul>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </PaginationWrapper>
-        </div>
-      </div>
-
-      {/* Modal Cadastro */}
-      <ModalCadastroUnidade unidadeEditando={unidadeEditando} onSalvo={fetchUnidades} />
-
-      {/* Modal Confirmação */}
-      <ModalConfirmacao
-        show={showConfirm}
-        onClose={() => setShowConfirm(false)}
-        onConfirm={handleConfirmDelete}
-        title="Excluir Unidade"
-        message={`Tem certeza que deseja excluir a unidade "${unidadeParaExcluir?.nome}"?`}
+      <TransferForm
+        form={form}
+        onChange={handleChange}
+        students={students}
+        cursos={cursos}
+        turmas={turmas}
+        unidades={unidades}
       />
-    </div>
+
+      <TransferSummary form={form} selectedAluno={selectedAluno} />
+
+      <CButton color="primary" className="mt-3" onClick={handleTransferir}>
+        Confirmar Transferência
+      </CButton>
+    </CContainer>
   )
 }
 
-export default GestaoUnidades
+export default TransferScreen

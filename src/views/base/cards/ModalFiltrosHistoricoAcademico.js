@@ -1,9 +1,19 @@
 import React, { useState } from 'react'
-import { CButton, CForm, CFormInput, CFormLabel, CFormSelect, CModal, CModalBody, CModalFooter, CModalHeader, CModalTitle } from '@coreui/react'
+import {
+  CButton,
+  CForm,
+  CFormInput,
+  CFormLabel,
+  CFormSelect,
+  CModal,
+  CModalBody,
+  CModalFooter,
+  CModalHeader,
+  CModalTitle
+} from '@coreui/react'
 
 const ModalFiltros = ({ onFiltrar }) => {
-  const [visible, setVisible] = useState(false)
-  const [filters, setFilters] = useState({
+  const initialState = {
     startDate: '',
     endDate: '',
     serie: '',
@@ -11,7 +21,10 @@ const ModalFiltros = ({ onFiltrar }) => {
     situacao: '',
     keyFilter: 'aluno',
     search: ''
-  })
+  }
+
+  const [visible, setVisible] = useState(false)
+  const [filters, setFilters] = useState(initialState)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -24,17 +37,9 @@ const ModalFiltros = ({ onFiltrar }) => {
   }
 
   const handleLimpar = () => {
-    const emptyFilters = {
-      startDate: '',
-      endDate: '',
-      serie: '',
-      disciplina: '',
-      situacao: '',
-      keyFilter: 'aluno',
-      search: ''
-    }
-    setFilters(emptyFilters)
-    onFiltrar(emptyFilters)
+    setFilters(initialState)
+    onFiltrar(initialState)
+    setVisible(false) // opcional — deixa o modal mais agradável
   }
 
   return (
@@ -43,15 +48,22 @@ const ModalFiltros = ({ onFiltrar }) => {
         <i className="fa fa-filter me-2"></i> Filtros
       </CButton>
 
-      <CModal visible={visible} onClose={() => setVisible(false)} alignment="center" size="lg">
+      <CModal
+        visible={visible}
+        onClose={() => setVisible(false)}
+        alignment="center"
+        size="lg"
+      >
         <CModalHeader>
           <CModalTitle>Filtrar Histórico Escolar</CModalTitle>
         </CModalHeader>
+
         <CModalBody>
-          <CForm>
+          <CForm onSubmit={(e) => e.preventDefault()}>
+            {/* FILTRO POR ANOS */}
             <div className="row mb-3">
               <div className="col">
-                <CFormLabel>Ano inicial</CFormLabel>
+                <CFormLabel>Ano Inicial</CFormLabel>
                 <CFormInput
                   type="number"
                   name="startDate"
@@ -61,7 +73,7 @@ const ModalFiltros = ({ onFiltrar }) => {
                 />
               </div>
               <div className="col">
-                <CFormLabel>Ano final</CFormLabel>
+                <CFormLabel>Ano Final</CFormLabel>
                 <CFormInput
                   type="number"
                   name="endDate"
@@ -72,6 +84,7 @@ const ModalFiltros = ({ onFiltrar }) => {
               </div>
             </div>
 
+            {/* SÉRIE E DISCIPLINA */}
             <div className="row mb-3">
               <div className="col">
                 <CFormLabel>Série</CFormLabel>
@@ -83,6 +96,7 @@ const ModalFiltros = ({ onFiltrar }) => {
                   placeholder="Ex: 3º Ano"
                 />
               </div>
+
               <div className="col">
                 <CFormLabel>Disciplina</CFormLabel>
                 <CFormInput
@@ -95,6 +109,7 @@ const ModalFiltros = ({ onFiltrar }) => {
               </div>
             </div>
 
+            {/* SITUAÇÃO */}
             <div className="mb-3">
               <CFormLabel>Situação</CFormLabel>
               <CFormSelect
@@ -108,6 +123,7 @@ const ModalFiltros = ({ onFiltrar }) => {
               </CFormSelect>
             </div>
 
+            {/* PESQUISA RÁPIDA */}
             <div className="row mb-3">
               <div className="col-4">
                 <CFormLabel>Pesquisar por</CFormLabel>
@@ -121,6 +137,7 @@ const ModalFiltros = ({ onFiltrar }) => {
                   <option value="situacao">Situação</option>
                 </CFormSelect>
               </div>
+
               <div className="col-8">
                 <CFormLabel>Texto</CFormLabel>
                 <CFormInput
@@ -134,10 +151,12 @@ const ModalFiltros = ({ onFiltrar }) => {
             </div>
           </CForm>
         </CModalBody>
+
         <CModalFooter>
           <CButton color="secondary" onClick={handleLimpar}>
             Limpar
           </CButton>
+
           <CButton color="primary" onClick={handleFiltrar}>
             Aplicar Filtros
           </CButton>
