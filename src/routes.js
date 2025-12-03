@@ -71,24 +71,45 @@ const RelatorioGerais = React.lazy(
 const ControleInadimplencia = React.lazy(
   () => import('./views/gestao-financeira/controle-inadimplencia/ControleInadimplencia'),
 )
-const ControleMensalidades = React.lazy(
-  () => import('./views/gestao-financeira/controle-mensalidades/ControleMensalidades'),
+
+// const ControleMensalidades = React.lazy(
+//   () => import('./views/gestao-financeira/controle-mensalidades/ControleMensalidades'),
+// )
+// const DescontosBolsas = React.lazy(
+//   () => import('./views/gestao-financeira/descontos-bolsas/DescontosBolsas'),
+// )
+// const EmissaoFaturasRecibos = React.lazy(
+//   () => import('./views/gestao-financeira/emissao-faturas-recibos/EmissaoFaturasRecibos'),
+// )
+// const PagamentosFaturacao = React.lazy(
+//   () => import('./views/gestao-financeira/pagamento-faturacao/PagamentosFaturacao'),
+// )
+// const ParametrosRegras = React.lazy(
+//   () => import('./views/gestao-financeira/parametros-regras-academicas/ParametrosRegras'),
+// )
+// const RelatorioFinanceiro = React.lazy(
+//   () => import('./views/gestao-financeira/relatorio-financeiro/RelatorioFinanceiro'),
+// )
+
+
+
+const InformacaoBancaria = React.lazy(
+  () => import('./views/configuracoes/InforBancaria/InformacaoBancariaPage'),
 )
-const DescontosBolsas = React.lazy(
-  () => import('./views/gestao-financeira/descontos-bolsas/DescontosBolsas'),
+
+const precosProduct = React.lazy(
+  () => import('./views/configuracoes/precos/PrecoPage'),
 )
-const EmissaoFaturasRecibos = React.lazy(
-  () => import('./views/gestao-financeira/emissao-faturas-recibos/EmissaoFaturasRecibos'),
+const materialDidatico = React.lazy(
+  () => import('./views/configuracoes/materialDidatico/MaterialDidaticoList'),
 )
-const PagamentosFaturacao = React.lazy(
-  () => import('./views/gestao-financeira/pagamento-faturacao/PagamentosFaturacao'),
+const horarioRouter = React.lazy(
+  () => import('./views/configuracoes/materialDidatico/MaterialDidaticoList'),
 )
-const ParametrosRegras = React.lazy(
-  () => import('./views/gestao-financeira/parametros-regras-academicas/ParametrosRegras'),
-)
-const RelatorioFinanceiro = React.lazy(
-  () => import('./views/gestao-financeira/relatorio-financeiro/RelatorioFinanceiro'),
-)
+
+
+
+
 
 //RH
 const ListaCargos = React.lazy(() => import('./views/rh/cargos/ListaCargos'))
@@ -293,57 +314,164 @@ const routes = [
   { path: 'icons/flags', name: 'Flags', element: Flags, roles: ['admin', 'Aluno'] },
   { path: 'icons/brands', name: 'Brands', element: Brands, roles: ['admin', 'Aluno'] },
 
-  // Gestão financeira
-  {
-    path: 'gestao-financeira',
-    name: 'Gestão Financeira',
-    element: ControleMensalidades,
-    exact: true,
+
+
+
+
+
+  // // Gestão financeira
+  // {
+  //   path: 'gestao-financeira',
+  //   name: 'Gestão Financeira',
+  //   element: ControleMensalidades,
+  //   exact: true,
+  //   roles: ['admin', 'financas'],
+  // },
+  // {
+  //   path: 'gestao-financeira/controle-inadimplencia',
+  //   name: 'Controle de Inadimplência',
+  //   element: ControleInadimplencia,
+  //   roles: ['admin', 'financas'],
+  // },
+  // {
+  //   path: 'gestao-financeira/controle-mensalidades',
+  //   name: 'Controle de Mensalidades',
+  //   element: ControleMensalidades,
+  //   roles: ['admin', 'financas'],
+  // },
+  // {
+  //   path: 'gestao-financeira/descontos-bolsas',
+  //   name: 'Descontos e Bolsas',
+  //   element: DescontosBolsas,
+  //   roles: ['admin', 'financas'],
+  // },
+  // {
+  //   path: 'gestao-financeira/emissao-faturas-recibos',
+  //   name: 'Emissão de Faturas e Recibos',
+  //   element: EmissaoFaturasRecibos,
+  //   roles: ['admin', 'financas'],
+  // },
+  // {
+  //   path: 'gestao-financeira/pagamento-faturacao',
+  //   name: 'Pagamentos e Faturação',
+  //   element: PagamentosFaturacao,
+  //   roles: ['admin', 'financas'],
+  // },
+  // {
+  //   path: 'gestao-financeira/parametros-regras-academicas',
+  //   name: 'Parâmetros e Regras Acadêmicas',
+  //   element: ParametrosRegras,
+  //   roles: ['admin', 'financas'],
+  // },
+  // {
+  //   path: 'gestao-financeira/relatorio-financeiro',
+  //   name: 'Relatório Financeiro',
+  //   element: RelatorioFinanceiro,
+  //   roles: ['admin', 'financas'],
+  // },
+
+
+
+
+
+    {
+    path: 'gestao-financeira/informacao-bancaria',
+    name: 'Informação Bancária',
+    element: InformacaoBancaria,
     roles: ['admin', 'financas'],
   },
-  {
-    path: 'gestao-financeira/controle-inadimplencia',
-    name: 'Controle de Inadimplência',
-    element: ControleInadimplencia,
+    {
+    path: 'gestao-financeira/precos-produts',
+    name: 'Gestão de Preços',
+    element: precosProduct,
     roles: ['admin', 'financas'],
   },
-  {
-    path: 'gestao-financeira/controle-mensalidades',
-    name: 'Controle de Mensalidades',
-    element: ControleMensalidades,
-    roles: ['admin', 'financas'],
-  },
-  {
-    path: 'gestao-financeira/descontos-bolsas',
-    name: 'Descontos e Bolsas',
-    element: DescontosBolsas,
-    roles: ['admin', 'financas'],
-  },
-  {
-    path: 'gestao-financeira/emissao-faturas-recibos',
-    name: 'Emissão de Faturas e Recibos',
-    element: EmissaoFaturasRecibos,
-    roles: ['admin', 'financas'],
-  },
-  {
-    path: 'gestao-financeira/pagamento-faturacao',
-    name: 'Pagamentos e Faturação',
-    element: PagamentosFaturacao,
-    roles: ['admin', 'financas'],
-  },
-  {
-    path: 'gestao-financeira/parametros-regras-academicas',
-    name: 'Parâmetros e Regras Acadêmicas',
-    element: ParametrosRegras,
-    roles: ['admin', 'financas'],
-  },
-  {
-    path: 'gestao-financeira/relatorio-financeiro',
-    name: 'Relatório Financeiro',
-    element: RelatorioFinanceiro,
-    roles: ['admin', 'financas'],
+    {
+    path: 'pedagogico/material-didatico',
+    name: 'Material Didático',
+    element: materialDidatico,
+    roles: ['admin'],
   },
 
+   {
+    path: 'pedagogico/horario',
+    name: 'Gestão de Horários',
+    element: horarioRouter,
+    roles: ['admin'],
+  },
+
+
+
+
+
+     {
+    path: 'financeiro/accounts-payable',
+    name: 'Contas a Pagar',
+    element: ContasPagar,
+    roles: ['admin'],
+  },
+
+       {
+    path: 'financeiro/accounts-receivable',
+    name: 'Contas a Receber',
+    element: ContasReceber,
+    roles: ['admin'],
+  },
+
+         {
+    path: 'financeiro/cash-movements',
+    name: 'Movimentos de Caixa',
+    element: MoviemntosDeCaixa,
+    roles: ['admin'],
+  },
+
+           {
+    path: 'financeiro/financial-reports',
+    name: 'Relatórios Financeiros',
+    element: RelatoriosFinanceiros,
+    roles: ['admin'],
+  },
+
+             {
+    path: 'financeiro/monthly-fees',
+    name: 'Mensalidades',
+    element: MensalidadesAluno,
+    roles: ['admin'],
+  },
+               {
+    path: 'financeiro/scholarships-and-discounts',
+    name: 'Bolsas e Descontos',
+    element: BolsasEDescontos,
+    roles: ['admin'],
+  },
+
+                 {
+    path: 'financeiro/employee-salaries',
+    name: 'Folha de Salários',
+    element: FolhaDeSalarios,
+    roles: ['admin'],
+  },
+                   {
+    path: 'financeiro/suppliers',
+    name: 'Fornecedores',
+    element: Fornecedores,
+    roles: ['admin'],
+  },
+                     {
+    path: 'financeiro/default-report',
+    name: 'Relatório Padrão',
+    element: RelatorioPadrao,
+    roles: ['admin'],
+  },
+
+  
+
+
+
+
+
+
+//// COMERCIAL
   {
     path: 'comercial/gestao-leads',
     name: 'Gestão de Leads e Oportunidades',
@@ -375,6 +503,12 @@ const routes = [
     roles: ['admin', 'comercial'],
   },
 
+
+
+
+
+
+  ////. RH
   {
     path: 'rh/cargos',
     name: 'Cargos e Funções',
@@ -412,6 +546,13 @@ const routes = [
     element: RelatorioPresencas,
     roles: ['admin', 'rh'],
   },
+
+
+
+
+
+
+
 
   // Configurações
   {
@@ -492,6 +633,9 @@ const routes = [
     element: Departamentos,
     roles: ['admin', 'rh'],
   },
+
+
+
 
   // Gestão escolar
   { path: 'notifications/modals', name: 'Modals', element: Modals, roles: ['admin'] },

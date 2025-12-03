@@ -335,8 +335,6 @@ const _nav = [
     ],
   },
 
-
-
   {
     component: CNavGroup,
     name: 'Gestão Comercial',
@@ -400,9 +398,6 @@ const _nav = [
       },
     ],
   },
-
-
-
 
   {
     component: CNavGroup,
@@ -480,12 +475,6 @@ const _nav = [
     ],
   },
 
-
-
-
-
-
-
   {
     component: CNavGroup,
     name: 'Gestão de Estágio e Empregabilidade',
@@ -549,10 +538,6 @@ const _nav = [
       },
     ],
   },
-
-
-
-
 
   {
     component: CNavGroup,
@@ -618,10 +603,6 @@ const _nav = [
     ],
   },
 
-
-
-
-
   {
     component: CNavGroup,
     name: 'Infraestrutura e Logística',
@@ -686,9 +667,6 @@ const _nav = [
     ],
   },
 
-
-
-
   {
     component: CNavGroup,
     name: 'Biblioteca e Recursos de Informação',
@@ -752,11 +730,6 @@ const _nav = [
       },
     ],
   },
-
-
-
-
-
 
   {
     component: CNavGroup,
@@ -828,7 +801,6 @@ const _nav = [
     ],
   },
 
-
   {
     component: CNavGroup,
     name: 'Comunicação e Marketing',
@@ -893,7 +865,6 @@ const _nav = [
     ],
   },
 
-
   {
     component: CNavGroup,
     name: 'Blog e Conteúdos',
@@ -916,62 +887,97 @@ const _nav = [
     ],
   },
 
-
-
   {
     component: CNavTitle,
     name: 'Configurações do Sistema',
   },
 
-           // =======================
-      // 🧭 CCONFIGURAÇÕES DO MENU
-      // =======================
+  // =======================
+  // 🧭 CCONFIGURAÇÕES DO MENU
+  // =======================
+
+  {
+    component: CNavGroup,
+    name: 'Configurações',
+    icon: <CIcon icon={cilSchool} customClassName="nav-icon" />,
+    roles: ['admin', 'coordenador'],
+    items: [
+      {
+        component: CNavItem,
+        name: 'Departamentos',
+        to: '/dashboard/config/internal-departments',
+                roles: ['admin', 'rh'],
+      },
+      {
+        component: CNavItem,
+        name: 'Coordenadores',
+        to: '/dashboard/config/coordenadores',
+                roles: ['admin'],
+
+      },
+      {
+        component: CNavItem,
+        name: 'Cursos',
+        to: '/dashboard/config/cursos',
+                roles: ['admin'],
+
+      },
+      {
+        component: CNavItem,
+        name: 'Turma',
+        to: '/dashboard/config/turma',
+                roles: ['admin'],
+
+      },
+      {
+        component: CNavItem,
+        name: 'Unidade',
+        to: '/dashboard/config/unidades',
+                roles: ['admin'],
+
+      },
+      {
+        component: CNavItem,
+        name: 'Endereço',
+        to: '/dashboard/config/enderecos',
+                roles: ['admin'],
+
+      },
+      {
+        component: CNavItem,
+        name: 'Disciplinas',
+        to: '/dashboard/pedagogico/disciplines',
+        roles: ['admin'],
+      },
+      {
+        component: CNavItem,
+        name: 'Informação Bancária',
+        to: '/dashboard/gestao-financeira/informacao-bancaria',
+        roles: ['admin', 'financas'],
+      },
 
       {
-        component: CNavGroup,
-        name: 'Configurações',
-        icon: <CIcon icon={cilSchool} customClassName="nav-icon" />,
-        roles: ['admin', 'coordenador'],
-        items: [
-           {
-            component: CNavItem,
-            name: 'Departamentos',
-            to: '/dashboard/config/internal-departments',
-          },
-          {
-            component: CNavItem,
-            name: 'Coordenadores',
-            to: '/dashboard/config/coordenadores',
-          },
-          {
-            component: CNavItem,
-            name: 'Cursos',
-            to: '/dashboard/config/cursos',
-          },
-          {
-            component: CNavItem,
-            name: 'Turma',
-            to: '/dashboard/config/turma',
-          },
-          {
-            component: CNavItem,
-            name: 'Unidade',
-            to: '/dashboard/config/unidades',
-          },
-          {
-            component: CNavItem,
-            name: 'Endereço',
-            to: '/dashboard/config/enderecos',
-          },
-           {
-            component: CNavItem,
-            name: 'Disciplinas',
-            to: '/dashboard/pedagogico/disciplines',
-            roles: ['admin'],
-          },
-
-        ],
+        component: CNavItem,
+        name: 'Gestão de Preços',
+        to: '/dashboard/gestao-financeira/precos-produts',
+        roles: ['admin'],
       },
+
+      {
+        component: CNavItem,
+        name: 'Material Didático',
+        to: '/dashboard/pedagogico/material-didatico',
+        roles: ['admin'],
+      },
+
+      {
+        component: CNavItem,
+        name: 'Gestão de Horários',
+        to: '/dashboard/pedagogico/horario',
+        roles: ['admin'],
+      },
+    ],
+  },
 
   /**
    *

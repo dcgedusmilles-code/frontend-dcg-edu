@@ -29,7 +29,7 @@ export const TransferForm = ({ form, onChange, students, cursos, turmas, unidade
         <CFormSelect name="curso_destino" value={form.curso_destino} onChange={onChange}>
           <option value="">Selecione o curso</option>
           {cursos.map((c) => (
-            <option key={c.id} value={c.titulo}>
+            <option key={c.id} value={c.id}>
               {c.titulo}
             </option>
           ))}
