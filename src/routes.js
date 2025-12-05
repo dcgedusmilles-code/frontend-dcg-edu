@@ -68,9 +68,37 @@ const RelatorioGerais = React.lazy(
 )
 
 // Gestão finaceira
-const ControleInadimplencia = React.lazy(
-  () => import('./views/gestao-financeira/controle-inadimplencia/ControleInadimplencia'),
+const ContasPagar = React.lazy(
+  () => import('./views/gestao-financeira/conta-pagar/ContaPagarList'),
 )
+const ContasReceber = React.lazy(
+  () => import('./views/gestao-financeira/conta-receber/ContaReceberList'),
+)
+const MoviemntosDeCaixa = React.lazy(
+  () => import('./views/gestao-financeira/caixa-movimento/CaixaMovimentoPage'),
+)
+const RelatoriosFinanceiros = React.lazy(
+  () => import('./views/gestao-financeira/financial-report/FinancialReport'),
+)
+const MensalidadesAluno = React.lazy(
+  () => import('./views/gestao-financeira/pagamento-faturacao/PagamentosPage'),
+)
+
+
+
+const BolsasEDescontos = React.lazy(
+  () => import('./views/gestao-financeira/caixa-movimento/CaixaMovimentoPage'),
+)
+const FolhaDeSalarios = React.lazy(
+  () => import('./views/gestao-financeira/caixa-movimento/CaixaMovimentoPage'),
+)
+const RelatorioPadrao = React.lazy(
+  () => import('./views/gestao-financeira/caixa-movimento/CaixaMovimentoPage'),
+)
+const Fornecedores = React.lazy(
+  () => import('./views/gestao-financeira/caixa-movimento/CaixaMovimentoPage'),
+)
+
 
 // const ControleMensalidades = React.lazy(
 //   () => import('./views/gestao-financeira/controle-mensalidades/ControleMensalidades'),

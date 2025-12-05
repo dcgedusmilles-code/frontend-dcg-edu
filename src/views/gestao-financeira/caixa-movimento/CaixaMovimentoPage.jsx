@@ -10,7 +10,7 @@ import {
 import { PaginationWrapper, ModalConfirmacao } from '../../../components'
 import ModalFiltroCaixaMovimento from './ModalFiltroCaixaMovimento'
 import ModalCreateCaixaMovimento from './ModalCreateCaixaMovimento'
-import cashMovementsService from './cashMovementsService'
+import cashMovementsService from '../../../services/cashMovementsService'
 
 const CaixaMovimentoPage = () => {
   const [movimentos, setMovimentos] = useState([])

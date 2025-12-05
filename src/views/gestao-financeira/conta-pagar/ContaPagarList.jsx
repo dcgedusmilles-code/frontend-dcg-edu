@@ -1,83 +1,130 @@
+import React, { useEffect, useState } from 'react'
+import {
+  CButton,
+  CCard,
+  CCardBody,
+  CContainer,
+  CRow,
+  CCol,
+  CTable,
+  CTableHead,
+  CTableRow,
+  CTableHeaderCell,
+  CTableBody,
+  CTableDataCell,
+} from '@coreui/react'
 
-import React, { useEffect, useState } from 'react';
-import { getAccountsPayable, deleteAccount } from '../../../services/accountsPayableService';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import ModalContaPagar from './ModalContaPagar';
-import FiltrosContaPagar from './FiltrosContaPagar';
+import { getAccountsPayable, deleteAccount } from '../../../services/accountsPayableService'
+
+import ModalContaPagar from './ModalContaPagar'
+import FiltrosContaPagar from './FiltrosContaPagar'
 
 export default function ContaPagarList() {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState(null);
-  const [open, setOpen] = useState(false);
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [selected, setSelected] = useState(null)
+  const [open, setOpen] = useState(false)
 
   const fetchData = () => {
-    setLoading(true);
+    setLoading(true)
     getAccountsPayable()
       .then((res) => setData(res.data))
-      .finally(() => setLoading(false));
-  };
+      .finally(() => setLoading(false))
+  }
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   const handleEdit = (item) => {
-    setSelected(item);
-    setOpen(true);
-  };
+    setSelected(item)
+    setOpen(true)
+  }
 
   const handleDelete = async (id) => {
-    await deleteAccount(id);
-    fetchData();
-  };
+    await deleteAccount(id)
+    fetchData()
+  }
 
   return (
-    <div className="p-6 space-y-4">
-      <h1 className="text-xl font-bold">Contas a Pagar</h1>
+    <CContainer className="mt-4">
+      <CRow className="mb-3">
+        <CCol>
+          <h2>Contas a Pagar</h2>
+        </CCol>
+      </CRow>
 
-      <FiltrosContaPagar onFilter={() => {}} />
+      <CRow>
+        <CCol>
+          <FiltrosContaPagar onFilter={() => {}} />
+        </CCol>
+      </CRow>
 
-      <Button className="mb-4" onClick={() => { setSelected(null); setOpen(true); }}>
-        Nova Conta
-      </Button>
+      <CRow className="mb-3">
+        <CCol>
+          <CButton
+            color="primary"
+            onClick={() => {
+              setSelected(null)
+              setOpen(true)
+            }}
+          >
+            Nova Conta
+          </CButton>
+        </CCol>
+      </CRow>
 
-      <Card>
-        <CardContent>
+      <CCard>
+        <CCardBody>
           {loading ? (
             <p>Carregando...</p>
           ) : (
-            <table className="w-full border">
-              <thead>
-                <tr className="border-b">
-                  <th>Fornecedor</th>
-                  <th>Descrição</th>
-                  <th>Valor</th>
-                  <th>Vencimento</th>
-                  <th>Status</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
+            <CTable bordered hover>
+              <CTableHead>
+                <CTableRow>
+                  <CTableHeaderCell>Fornecedor</CTableHeaderCell>
+                  <CTableHeaderCell>Descrição</CTableHeaderCell>
+                  <CTableHeaderCell>Valor</CTableHeaderCell>
+                  <CTableHeaderCell>Vencimento</CTableHeaderCell>
+                  <CTableHeaderCell>Status</CTableHeaderCell>
+                  <CTableHeaderCell>Ações</CTableHeaderCell>
+                </CTableRow>
+              </CTableHead>
+
+              <CTableBody>
                 {data.map((item) => (
-                  <tr key={item.id} className="border-b text-sm">
-                    <td>{item.fornecedor?.nome || '-'}</td>
-                    <td>{item.descricao}</td>
-                    <td>{item.valor}</td>
-                    <td>{item.data_vencimento}</td>
-                    <td>{item.status}</td>
-                    <td className="space-x-2">
-                      <Button size="sm" onClick={() => handleEdit(item)}>Editar</Button>
-                      <Button size="sm" variant="destructive" onClick={() => handleDelete(item.id)}>Apagar</Button>
-                    </td>
-                  </tr>
+                  <CTableRow key={item.id}>
+                    <CTableDataCell>{item.fornecedor?.nome || '-'}</CTableDataCell>
+                    <CTableDataCell>{item.descricao}</CTableDataCell>
+                    <CTableDataCell>{item.valor}</CTableDataCell>
+                    <CTableDataCell>{item.data_vencimento}</CTableDataCell>
+                    <CTableDataCell>{item.status}</CTableDataCell>
+
+                    <CTableDataCell>
+                      <CButton
+                        size="sm"
+                        color="warning"
+                        className="me-2"
+                        onClick={() => handleEdit(item)}
+                      >
+                        Editar
+                      </CButton>
+
+                      <CButton
+                        size="sm"
+                        color="danger"
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        Apagar
+                      </CButton>
+                    </CTableDataCell>
+                  </CTableRow>
                 ))}
-              </tbody>
-            </table>
+              </CTableBody>
+            </CTable>
           )}
-        </CardContent>
-      </Card>
+        </CCardBody>
+      </CCard>
 
       {open && (
         <ModalContaPagar
@@ -87,8 +134,6 @@ export default function ContaPagarList() {
           refresh={fetchData}
         />
       )}
-    </div>
-  );
+    </CContainer>
+  )
 }
-
-

@@ -8,7 +8,7 @@ import {
   CFormSelect,
   CButton,
 } from '@coreui/react'
-import cashMovementsService from './cashMovementsService'
+import cashMovementsService from '../../../services/cashMovementsService'
 
 const ModalCreateCaixaMovimento = ({ show, onClose, onSaved }) => {
   const [data, setData] = useState({

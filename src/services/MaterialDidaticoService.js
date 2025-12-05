@@ -3,26 +3,22 @@ import api from '../api'
 
 const API = "/pedagogico/material-didatico";
 
-class MaterialDidaticoService {
-  listar() {
+  export async function listar() {
     return api.get(API);
   }
 
-  obterPorId(id) {
+  export async function obterPorId(id) {
     return api.get(`${API}/${id}`);
   }
 
-  criar(data) {
+  export async function criar(data) {
     return api.post(API, data);
   }
 
-  atualizar(id, data) {
+  export async function atualizar(id, data) {
     return api.put(`${API}/${id}`, data);
   }
 
-  remover(id) {
+  export async function remover(id) {
     return api.delete(`${API}/${id}`);
   }
-}
-
-export default new MaterialDidaticoService();

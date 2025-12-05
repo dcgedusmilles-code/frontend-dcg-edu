@@ -1,11 +1,15 @@
-
-// -----------------------------------------------------------------------------
-// components/ModalContaPagar.jsx
-// -----------------------------------------------------------------------------
-import React, { useEffect, useState } from 'react';
-import { createAccount, updateAccount } from '@/services/accountsPayableService';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import React, { useEffect, useState } from 'react'
+import {
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
+  CButton,
+  CForm,
+  CFormInput,
+} from '@coreui/react'
+import { createAccount, updateAccount } from '../../../services/accountsPayableService'
 
 export default function ModalContaPagar({ open, setOpen, selected, refresh }) {
   const [form, setForm] = useState({
@@ -14,69 +18,78 @@ export default function ModalContaPagar({ open, setOpen, selected, refresh }) {
     valor: '',
     data_vencimento: '',
     data_pagamento: '',
-    status: ''
-  });
+    status: '',
+  })
 
   useEffect(() => {
-    if (selected) setForm(selected);
-  }, [selected]);
+    if (selected) setForm(selected)
+  }, [selected])
 
   const handleSubmit = async () => {
-    if (selected) await updateAccount(selected.id, form);
-    else await createAccount(form);
-    refresh();
-    setOpen(false);
-  };
+    if (selected) await updateAccount(selected.id, form)
+    else await createAccount(form)
+
+    refresh()
+    setOpen(false)
+  }
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center p-4">
-      <Card className="w-full max-w-lg p-4">
-        <CardContent className="space-y-4">
-          <h2 className="text-lg font-bold">{selected ? 'Editar Conta' : 'Nova Conta'}</h2>
+    <CModal visible={open} onClose={() => setOpen(false)}>
+      <CModalHeader>
+        <CModalTitle>{selected ? 'Editar Conta' : 'Nova Conta'}</CModalTitle>
+      </CModalHeader>
 
-          <input
-            className="border p-2 w-full"
-            placeholder="Fornecedor ID"
+      <CModalBody>
+        <CForm className="row g-3">
+          <CFormInput
+            label="Fornecedor ID"
             value={form.fornecedor_id}
             onChange={(e) => setForm({ ...form, fornecedor_id: e.target.value })}
           />
-          <input
-            className="border p-2 w-full"
-            placeholder="Descrição"
+
+          <CFormInput
+            label="Descrição"
             value={form.descricao}
             onChange={(e) => setForm({ ...form, descricao: e.target.value })}
           />
-          <input
-            className="border p-2 w-full"
-            placeholder="Valor"
+
+          <CFormInput
+            label="Valor"
             value={form.valor}
             onChange={(e) => setForm({ ...form, valor: e.target.value })}
           />
-          <input
-            className="border p-2 w-full"
+
+          <CFormInput
             type="date"
+            label="Data de Vencimento"
             value={form.data_vencimento}
             onChange={(e) => setForm({ ...form, data_vencimento: e.target.value })}
           />
-          <input
-            className="border p-2 w-full"
+
+          <CFormInput
             type="date"
+            label="Data de Pagamento"
             value={form.data_pagamento}
             onChange={(e) => setForm({ ...form, data_pagamento: e.target.value })}
           />
-          <input
-            className="border p-2 w-full"
-            placeholder="Status"
+
+          <CFormInput
+            label="Status"
             value={form.status}
             onChange={(e) => setForm({ ...form, status: e.target.value })}
           />
+        </CForm>
+      </CModalBody>
 
-          <div className="flex justify-end space-x-2">
-            <Button variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button>
-            <Button onClick={handleSubmit}>Salvar</Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+      <CModalFooter>
+        <CButton color="secondary" onClick={() => setOpen(false)}>
+          Cancelar
+        </CButton>
+
+        <CButton color="primary" onClick={handleSubmit}>
+          Salvar
+        </CButton>
+      </CModalFooter>
+    </CModal>
+  )
 }
