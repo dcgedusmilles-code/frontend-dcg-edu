@@ -1,6 +1,6 @@
 // src/views/MaterialDidatico/MaterialDidaticoList.jsx
 import React, { useEffect, useState } from 'react'
-import MaterialDidaticoService from '../../../services/MaterialDidaticoService'
+import { atualizar, criar, listar, obterPorId, remover} from '../../../services/MaterialDidaticoService'
 import {
   CButton,
   CCard,
@@ -27,7 +27,7 @@ const MaterialDidaticoList = () => {
 
   const carregar = () => {
     setLoading(true)
-    MaterialDidaticoService.listar()
+    listar()
       .then((res) => setLista(res.data))
       .finally(() => setLoading(false))
   }

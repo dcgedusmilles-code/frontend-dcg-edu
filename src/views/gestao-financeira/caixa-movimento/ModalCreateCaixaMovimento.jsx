@@ -8,7 +8,7 @@ import {
   CFormSelect,
   CButton,
 } from '@coreui/react'
-import cashMovementsService from '../../../services/cashMovementsService'
+import { create } from '../../../services/cashMovementsService'
 
 const ModalCreateCaixaMovimento = ({ show, onClose, onSaved }) => {
   const [data, setData] = useState({
@@ -21,7 +21,7 @@ const ModalCreateCaixaMovimento = ({ show, onClose, onSaved }) => {
 
   const handleSave = async () => {
     try {
-      await cashMovementsService.create(data)
+      await create(data)
       onClose()
       onSaved()
     } catch (err) {

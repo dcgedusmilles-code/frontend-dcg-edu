@@ -8,11 +8,11 @@ import {
   CModalFooter,
   CButton,
 } from "@coreui/react";
-import MaterialDidaticoService from "../../../services/MaterialDidaticoService";
+import { atualizar, listar, obterPorId, criar, remover} from "../../../services/MaterialDidaticoService";
 
 const MaterialDidaticoModalDelete = ({ visible, onClose, item, reload }) => {
   const apagar = () => {
-    MaterialDidaticoService.remover(item.id).then(() => {
+    remover(item.id).then(() => {
       reload();
       onClose();
     });

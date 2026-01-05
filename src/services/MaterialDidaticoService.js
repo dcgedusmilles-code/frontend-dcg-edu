@@ -1,24 +1,24 @@
 // src/services/MaterialDidaticoService.js
 import api from '../api'
 
-const API = "/pedagogico/material-didatico";
+const API = '/pedagogico/material-didatico'
 
-  export async function listar() {
-    return api.get(API);
-  }
+export const listar = async (params = {}) => {
+  return api.get(API)
+}
 
-  export async function obterPorId(id) {
-    return api.get(`${API}/${id}`);
-  }
+export const obterPorId = async (id) => {
+  return api.get(`${API}/${id}`)
+}
 
-  export async function criar(data) {
-    return api.post(API, data);
-  }
+export const criar = async (data) => {
+  return api.post(API, data)
+}
 
-  export async function atualizar(id, data) {
-    return api.put(`${API}/${id}`, data);
-  }
+export const atualizar = async (id, data) => {
+  return api.put(`${API}/${id}`, data)
+}
 
-  export async function remover(id) {
-    return api.delete(`${API}/${id}`);
-  }
+export const remover = async (id) => {
+  return api.delete(`${API}/${id}`)
+}

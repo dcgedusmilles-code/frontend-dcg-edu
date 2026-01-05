@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import axios from '../../../api'
+import api from '../../../api'
 import { CCard, CCardBody, CCardHeader, CCol, CRow, CContainer } from '@coreui/react'
+
 import ModalProfessor from './ModalProfessor'
 import ModalFiltrosProfessores from './ModalFiltrosProfessores'
 import { PaginationWrapper, ModalConfirmacao } from '../../../components'
@@ -9,27 +10,33 @@ const API = '/pedagogico/teachers'
 
 const GestaoProfessores = () => {
   const [professores, setProfessores] = useState([])
-  const [filtros, setFiltros] = useState({ nome: '', email: '', departamento: '' })
   const [loading, setLoading] = useState(false)
+  const [visibleCreate, setVisibleCreate] = useState(false)
+  const [filtros, setFiltros] = useState({})
   const [professorEditando, setProfessorEditando] = useState(null)
   const [professorParaExcluir, setProfessorParaExcluir] = useState(null)
   const [showConfirm, setShowConfirm] = useState(false)
 
   // ------------------------------------------------------------------
-  // ✅ Buscar professores com filtros
+  // 🔍 Buscar professores
   // ------------------------------------------------------------------
-  const fetchProfessores = async () => {
+  const fetchProfessores = async (customFilters = filtros) => {
     try {
       setLoading(true)
-      const params = {}
-      if (filtros.nome) params.nome = filtros.nome
-      if (filtros.email) params.email = filtros.email
-      if (filtros.departamento) params.departamento = filtros.departamento
 
-      const { data } = await axios.get(API, { params })
-      setProfessores(data || [])
+      const params = {}
+
+      if (customFilters.nome) params.nome = customFilters.nome
+      if (customFilters.email) params.email = customFilters.email
+      if (customFilters.departamento) params.departamento = customFilters.departamento
+
+      const { data } = await api.get(API, { params })
+
+      const lista = Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : []
+
+      setProfessores(lista)
     } catch (error) {
-      console.error('Erro ao buscar professores:', error)
+      console.error('Erro ao carregar professores:', error)
     } finally {
       setLoading(false)
     }
@@ -40,7 +47,7 @@ const GestaoProfessores = () => {
   }, [])
 
   // ------------------------------------------------------------------
-  // 🗑️ Exclusão com confirmação
+  // 🗑️ Exclusão
   // ------------------------------------------------------------------
   const confirmarExclusao = (prof) => {
     setProfessorParaExcluir(prof)
@@ -50,7 +57,7 @@ const GestaoProfessores = () => {
   const handleConfirmDelete = async () => {
     if (!professorParaExcluir) return
     try {
-      await axios.delete(`${API}/${professorParaExcluir.id}`)
+      await api.delete(`${API}/${professorParaExcluir.id}`)
       fetchProfessores()
     } catch (error) {
       console.error('Erro ao excluir professor:', error)
@@ -61,16 +68,13 @@ const GestaoProfessores = () => {
   }
 
   // ------------------------------------------------------------------
-  // 🔍 Filtro via componente filho
+  // Filtros vindos do modal
   // ------------------------------------------------------------------
-  const handleFiltrar = (filters) => {
-    setFiltros(filters)
-    fetchProfessores(filters)
+  const handleFiltrar = (filtersConverted) => {
+    setFiltros(filtersConverted)
+    fetchProfessores(filtersConverted)
   }
 
-  // ------------------------------------------------------------------
-  // 🧾 Renderização
-  // ------------------------------------------------------------------
   return (
     <CRow>
       <CCol xs={12}>
@@ -87,9 +91,10 @@ const GestaoProfessores = () => {
           <CCol xs={6} md={4} className="d-flex justify-content-end gap-2">
             <button
               className="btn btn-success"
-              data-bs-toggle="modal"
-              data-bs-target="#modalProfessor"
-              onClick={() => setProfessorEditando(null)}
+              onClick={() => {
+                setProfessorEditando(null)
+                setVisibleCreate(true)
+              }}
             >
               Registrar Professor
             </button>
@@ -142,12 +147,13 @@ const GestaoProfessores = () => {
                                   <button
                                     className="dropdown-item btn-sm"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#modalProfessor"
+                                    data-bs-target="#modalProfessorCadastro"
                                     onClick={() => setProfessorEditando(prof)}
                                   >
                                     <i className="fa fa-edit"></i> Editar
                                   </button>
                                 </li>
+
                                 <li>
                                   <button
                                     className="dropdown-item btn-sm text-danger"
@@ -167,10 +173,17 @@ const GestaoProfessores = () => {
               </PaginationWrapper>
             )}
 
-            {/* 🧾 Modal Cadastro */}
-            <ModalProfessor professorEditando={professorEditando} onSalvo={fetchProfessores} />
+            {/* MODAL CADASTRO / EDIÇÃO */}
+            <ModalProfessor
+              id="modalProfessorCadastro"
+              professorEditando={professorEditando}
+              onSalvo={fetchProfessores}
+                      onClose={() => setVisibleCreate(false)}
+                      visible={visibleCreate}
 
-            {/* ⚠️ Modal Confirmação */}
+            />
+
+            {/* MODAL CONFIRMAÇÃO */}
             <ModalConfirmacao
               show={showConfirm}
               onClose={() => setShowConfirm(false)}

@@ -12,7 +12,7 @@ import {
   CFormSelect,
   CButton,
 } from "@coreui/react";
-import MaterialDidaticoService from "../../../services/MaterialDidaticoService";
+import { atualizar, criar,listar, obterPorId, remover} from "../../../services/MaterialDidaticoService";
 import api from '../../../api'
 
 const MaterialDidaticoForm = ({ visible, onClose, item, reload }) => {
@@ -69,12 +69,12 @@ const MaterialDidaticoForm = ({ visible, onClose, item, reload }) => {
 
   const salvar = () => {
     if (item) {
-      MaterialDidaticoService.atualizar(item.id, data).then(() => {
+      atualizar(item.id, data).then(() => {
         reload();
         onClose();
       });
     } else {
-      MaterialDidaticoService.criar(data).then(() => {
+      criar(data).then(() => {
         reload();
         onClose();
       });

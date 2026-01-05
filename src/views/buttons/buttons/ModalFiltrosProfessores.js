@@ -1,7 +1,11 @@
 import React, { useState } from 'react'
 
 const ModalFiltrosProfessores = ({ onFiltrar }) => {
-  const [filters, setFilters] = useState({ keyFilter: '', search: '', orderBy: '' })
+  const [filters, setFilters] = useState({
+    keyFilter: '',
+    search: '',
+    orderBy: ''
+  })
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -9,12 +13,20 @@ const ModalFiltrosProfessores = ({ onFiltrar }) => {
   }
 
   const handleApply = () => {
-    onFiltrar(filters)
+    const convert = {}
+
+    if (filters.keyFilter && filters.search) {
+      convert[filters.keyFilter] = filters.search
+    }
+    if (filters.orderBy) convert.orderBy = filters.orderBy
+
+    onFiltrar(convert)
   }
 
   return (
     <div className="card p-3 mb-3">
       <div className="row g-3 align-items-end">
+
         <div className="col-md-4">
           <label>Filtrar por</label>
           <select
@@ -26,10 +38,10 @@ const ModalFiltrosProfessores = ({ onFiltrar }) => {
             <option value="">Selecione</option>
             <option value="nome">Nome</option>
             <option value="email">Email</option>
-            <option value="especialidade">Especialidade</option>
-            <option value="status">Status</option>
+            <option value="departamento">Departamento</option>
           </select>
         </div>
+
         <div className="col-md-4">
           <label>Pesquisar</label>
           <input
@@ -40,6 +52,7 @@ const ModalFiltrosProfessores = ({ onFiltrar }) => {
             onChange={handleChange}
           />
         </div>
+
         <div className="col-md-3">
           <label>Ordenar por</label>
           <select
@@ -51,14 +64,15 @@ const ModalFiltrosProfessores = ({ onFiltrar }) => {
             <option value="">Selecione</option>
             <option value="nome">Nome</option>
             <option value="email">Email</option>
-            <option value="especialidade">Especialidade</option>
           </select>
         </div>
+
         <div className="col-md-1">
           <button className="btn btn-primary w-100" onClick={handleApply}>
             Aplicar
           </button>
         </div>
+
       </div>
     </div>
   )

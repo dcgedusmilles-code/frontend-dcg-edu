@@ -10,7 +10,7 @@ import {
 import { PaginationWrapper, ModalConfirmacao } from '../../../components'
 import ModalFiltroCaixaMovimento from './ModalFiltroCaixaMovimento'
 import ModalCreateCaixaMovimento from './ModalCreateCaixaMovimento'
-import cashMovementsService from '../../../services/cashMovementsService'
+import { getAll, remove} from '../../../services/cashMovementsService'
 
 const CaixaMovimentoPage = () => {
   const [movimentos, setMovimentos] = useState([])
@@ -26,7 +26,7 @@ const CaixaMovimentoPage = () => {
 
   const carregarMovimentos = async () => {
     try {
-      const dados = await cashMovementsService.getAll()
+      const dados = await getAll()
       setMovimentos(dados)
       setFiltrados(dados)
     } catch (err) {
@@ -71,7 +71,7 @@ const CaixaMovimentoPage = () => {
   const deletar = async () => {
     if (!registroParaExcluir) return
     try {
-      await cashMovementsService.remove(registroParaExcluir.id)
+      await remove(registroParaExcluir.id)
 
       setMovimentos((prev) =>
         prev.filter((m) => m.id !== registroParaExcluir.id)

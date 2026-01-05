@@ -87,7 +87,7 @@ const MensalidadesAluno = React.lazy(
 
 
 const BolsasEDescontos = React.lazy(
-  () => import('./views/gestao-financeira/caixa-movimento/CaixaMovimentoPage'),
+  () => import('./views/gestao-financeira/bolsa-desconto/BolsaDescontoPage'),
 )
 const FolhaDeSalarios = React.lazy(
   () => import('./views/gestao-financeira/caixa-movimento/CaixaMovimentoPage'),
