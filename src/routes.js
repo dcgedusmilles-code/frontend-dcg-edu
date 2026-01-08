@@ -147,6 +147,8 @@ const RecibosPagamento = React.lazy(() => import('./views/rh/folha-pagamento/Rec
 const RegistroPonto = React.lazy(() => import('./views/rh/presencas/RegistroPonto'))
 const RelatorioPresencas = React.lazy(() => import('./views/rh/presencas/RelatorioPresencas'))
 
+
+
 // Configurações
 const ConfiguracoesGerais = React.lazy(
   () => import('./views/configuracoes/pages/ConfiguracoesGerais'),
@@ -177,6 +179,19 @@ const Departamentos = React.lazy(
 const Enderecos = React.lazy(
   () => import('./views/configuracoes/enderecos/Enderecos'),
 )
+
+
+
+// avaliacao-certicacao 
+const assessments = React.lazy(()=> import('./views/avaliacao_certificacao/assessments/pages/AvaliacaoList'))
+const assessmentsForm = React.lazy(()=> import('./views/avaliacao_certificacao/assessments/pages/AvaliacaoForm'))
+const assessmentsDetails = React.lazy(()=> import('./views/avaliacao_certificacao/assessments/pages/AvaliacaoDetails'))
+
+const evaluationCriterias = React.lazy(()=> import('./views/avaliacao_certificacao/evaluation-criterias/pages/CriterioList'))
+const evaluationCriteriasForm = React.lazy(()=> import('./views/avaliacao_certificacao/evaluation-criterias/pages/CriterioForm'))
+const evaluationCriteriasDetails = React.lazy(()=> import('./views/avaliacao_certificacao/evaluation-criterias/pages/CriterioDetails'))
+
+
 
 const routes = [
   {
@@ -343,6 +358,22 @@ const routes = [
   { path: 'icons/brands', name: 'Brands', element: Brands, roles: ['admin', 'Aluno'] },
 
 
+
+
+
+
+
+
+  // avaliacao-certicacao 
+    { path: 'avaliacao-certicacao/assessments', exact: true, name: 'assessments', element: assessments, roles: ['admin', 'Aluno'] },
+    { path: 'avaliacao-certicacao/assessments/nova', exact: true, name: 'assessments', element: assessmentsForm, roles: ['admin', 'Aluno'] },
+    { path: 'avaliacao-certicacao/assessments/:id', exact: true, name: 'assessments', element: assessmentsDetails, roles: ['admin', 'Aluno'] },
+    { path: 'avaliacao-certicacao/assessments/:id/editar', exact: true, name: 'assessments', element: assessmentsForm, roles: ['admin', 'Aluno'] },
+    
+    { path: 'avaliacao-certicacao/evaluation-criterias', exact: true, name: 'assessments', element: evaluationCriterias, roles: ['admin', 'Aluno'] },
+    { path: 'avaliacao-certicacao/evaluation-criterias/novo', exact: true, name: 'assessments', element: evaluationCriteriasForm, roles: ['admin', 'Aluno'] },
+    { path: 'avaliacao-certicacao/evaluation-criterias/:id', exact: true, name: 'assessments', element: evaluationCriteriasDetails, roles: ['admin', 'Aluno'] },
+    { path: 'avaliacao-certicacao/evaluation-criterias/:id/editar', exact: true, name: 'assessments', element: evaluationCriteriasForm, roles: ['admin', 'Aluno'] },
 
 
 
